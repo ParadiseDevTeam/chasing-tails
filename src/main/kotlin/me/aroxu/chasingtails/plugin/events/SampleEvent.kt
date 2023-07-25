@@ -1,4 +1,4 @@
-package me.aroxu.sample.plugin.events
+package me.aroxu.chasingtails.plugin.events
 
 import org.bukkit.event.Listener
 

@@ -1,15 +1,15 @@
-package me.aroxu.sample.plugin
+package me.aroxu.chasingtails.plugin
 
 import cloud.commandframework.execution.CommandExecutionCoordinator
 import cloud.commandframework.paper.PaperCommandManager
-import me.aroxu.sample.plugin.commands.SampleCommand
-import me.aroxu.sample.plugin.events.SampleEvent
+import me.aroxu.chasingtails.plugin.commands.ChasingtailsCommand
+import me.aroxu.chasingtails.plugin.events.SampleEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.function.Function
 
-class SamplePlugin : JavaPlugin() {
+class ChasingtailsPlugin : JavaPlugin() {
     companion object {
-        lateinit var instance: SamplePlugin
+        lateinit var instance: ChasingtailsPlugin
             private set
     }
 
@@ -24,6 +24,6 @@ class SamplePlugin : JavaPlugin() {
             Function.identity(),
             Function.identity()
         )
-        commandManager.command(SampleCommand.registerCommand(commandManager))
+        commandManager.command(ChasingtailsCommand.registerCommand(commandManager))
     }
 }

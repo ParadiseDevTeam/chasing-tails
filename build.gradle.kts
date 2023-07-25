@@ -10,7 +10,7 @@ plugins {
 
 group = "me.aroxu"
 version = "0.0.1"
-val codeName = "sample"
+val codeName = "chasingtails"
 
 repositories {
     mavenCentral()
@@ -48,6 +48,9 @@ idea {
 paper {
     main = "${project.group}.${codeName}.plugin.${codeName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}Plugin"
     loader = "${project.group}.${codeName}.plugin.loader.${codeName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}PluginLoader"
+
+    println(main)
+    println(loader)
 
     generateLibrariesJson = true
     foliaSupported = false
