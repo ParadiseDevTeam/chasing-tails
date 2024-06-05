@@ -28,6 +28,7 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
     }
+
     jar {
         archiveBaseName.set(rootProject.name)
         archiveClassifier.set("")

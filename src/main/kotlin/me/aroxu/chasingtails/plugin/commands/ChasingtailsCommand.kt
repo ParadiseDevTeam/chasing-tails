@@ -2,67 +2,69 @@ package me.aroxu.chasingtails.plugin.commands
 
 import cloud.commandframework.Command
 import cloud.commandframework.CommandManager
-import cloud.commandframework.arguments.standard.DoubleArgument
-import cloud.commandframework.bukkit.parsers.WorldArgument
-import cloud.commandframework.bukkit.parsers.location.Location2DArgument
-import me.aroxu.chasingtails.plugin.objects.ChasingtailObject.plugin
+import cloud.commandframework.arguments.standard.BooleanArgument
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsGame
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsGame.isRunning
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsGame.startGame
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsGame.stopGame
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsSettings
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.plugin
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.server
 import net.kyori.adventure.text.Component.text
-import org.bukkit.World
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.GameMode
 import org.bukkit.command.CommandSender
-import java.math.BigDecimal
-import kotlin.math.pow
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 
 object ChasingtailsCommand {
     fun registerCommand(manager: CommandManager<CommandSender>): Command.Builder<CommandSender> {
-        val root = manager.commandBuilder("chasingtail", "ct")
+        val builder = manager.commandBuilder("chasingtail", "ct")
 
-        manager.command(root.literal("worldborder", "wb")
+        manager.command(builder.literal("start")
+            .permission { sender -> sender.isOp }
             .handler { ctx ->
-                plugin.server.worlds.forEach {
-                    ctx.sender.sendMessage(
-                        text(
-                            "세계 ${it.name}의 크기: ${BigDecimal(it.worldBorder.size)} (${
-                                BigDecimal(sqrt(it.worldBorder.size).roundToInt())
-                            } x ${BigDecimal(sqrt(it.worldBorder.size).roundToInt())})"
-                        )
-                    )
+                server.scheduler.runTask(plugin, Runnable {
+                    if (server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }.size !in 7..8) {
+                        ctx.sender.sendMessage(text("플레이어의 수가 7명에서 8명이여야 합니다.", NamedTextColor.RED))
+                    } else {
+                        if (!isRunning) {
+                            startGame()
+                            server.onlinePlayers.forEach {
+                                it.sendMessage(text("게임을 시작합니다.", NamedTextColor.GREEN))
+                            }
+                        } else {
+                            ctx.sender.sendMessage(text("이미 게임이 진행중입니다.", NamedTextColor.RED))
+                        }
+                    }
+                })
+            }
+        )
+
+        manager.command(builder.literal("stop")
+            .permission { sender -> sender.isOp }
+            .handler { ctx ->
+                if (isRunning) {
+                    stopGame()
+                    ctx.sender.sendMessage(text("게임을 종료합니다.", NamedTextColor.GREEN))
+                } else {
+                    ctx.sender.sendMessage(text("게임이 진행중이지 않습니다.", NamedTextColor.RED))
                 }
             }
         )
-        manager.command(root.literal("worldborder", "wb")
-            .literal("setBySize")
-            .argument(WorldArgument.of("world"))
-            .argument(DoubleArgument.of("size"))
-            .argument(Location2DArgument.optional("location"))
-            .handler { ctx ->
-                val world = ctx.get<World>("world")
-                val size = ctx.get<Double>("size")
-                val location = ctx.getOrDefault("location", world.spawnLocation)
-                val worldBorder = world.worldBorder
-                worldBorder.center = location
-                worldBorder.size = sqrt(size)
-                ctx.sender.sendMessage(text("세계 ${world.name}의 월드 보더 크기를 ${sqrt(size)} x ${sqrt(size)} ($size)으로 설정하였습니다."))
-            }
+
+        manager.command(
+            builder.literal("settings")
+                .literal("targeterAttackable")
+                .argument(BooleanArgument.of("value")) { "타겟 → 타게터 공격 여부를 설정합니다." }
+                .handler { ctx ->
+                    val argumentValue = ctx.get<Boolean>("value")
+
+                    ChasingTailsSettings.targeterAttackable = argumentValue
+                    ctx.sender.sendMessage(text("타겟 → 타게터 공격 여부: $argumentValue", NamedTextColor.GREEN))
+                    ctx.sender.sendMessage(text("성공적으로 설정을 변경하였습니다.", NamedTextColor.WHITE))
+                }
         )
 
-        manager.command(root.literal("worldborder", "wb")
-            .literal("setBySide")
-            .argument(WorldArgument.of("world"))
-            .argument(DoubleArgument.of("size"))
-            .argument(Location2DArgument.optional("location"))
-            .handler { ctx ->
-                val world = ctx.get<World>("world")
-                val size = ctx.get<Double>("size")
-                val location = ctx.getOrDefault("location", world.spawnLocation)
-                val worldBorder = world.worldBorder
-                worldBorder.center = location
-                worldBorder.size = size.pow(2)
-                ctx.sender.sendMessage(text("세계 ${world.name}의 월드 보더 크기를 $size x $size (${size.pow(2)})으로 설정하였습니다."))
-            }
-        )
-        return root
+        return builder
     }
 }
