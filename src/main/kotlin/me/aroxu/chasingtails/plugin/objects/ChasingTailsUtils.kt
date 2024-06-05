@@ -2,11 +2,7 @@ package me.aroxu.chasingtails.plugin.objects
 
 import me.aroxu.chasingtails.plugin.ChasingtailsPlugin
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Difficulty
-import org.bukkit.GameRule
-import org.bukkit.Location
-import org.bukkit.OfflinePlayer
-import org.bukkit.World
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
 
@@ -18,26 +14,37 @@ object ChasingTailsUtils {
         reinitializeScoreboard()
     }
 
+    val mappedColors = hashMapOf<NamedTextColor, String>(
+        Pair(NamedTextColor.LIGHT_PURPLE, "핑크색"),
+        Pair(NamedTextColor.RED, "빨간색"),
+        Pair(NamedTextColor.GOLD, "주황색"),
+        Pair(NamedTextColor.YELLOW, "노란색"),
+        Pair(NamedTextColor.GREEN, "초록색"),
+        Pair(NamedTextColor.DARK_PURPLE, "보라색"),
+        Pair(NamedTextColor.DARK_BLUE, "남색"),
+        Pair(NamedTextColor.BLUE, "파란색")
+    )
+
     fun Scoreboard.reinitializeScoreboard() {
+        val colorList = listOf(
+            NamedTextColor.LIGHT_PURPLE,
+            NamedTextColor.RED,
+            NamedTextColor.GOLD,
+            NamedTextColor.YELLOW,
+            NamedTextColor.GREEN,
+            NamedTextColor.BLUE,
+            NamedTextColor.DARK_BLUE,
+            NamedTextColor.DARK_PURPLE,
+        ).reversed()
+
         colorList.forEachIndexed { index, color ->
+            getTeam("team$index")?.unregister()
+
             registerNewTeam("team$index").apply {
                 color(color)
             }
         }
     }
-
-    val colorList = listOf(
-        NamedTextColor.LIGHT_PURPLE,
-        NamedTextColor.RED,
-        NamedTextColor.GOLD,
-        NamedTextColor.YELLOW,
-        NamedTextColor.GREEN,
-        NamedTextColor.BLUE,
-        NamedTextColor.DARK_BLUE,
-        NamedTextColor.DARK_PURPLE,
-
-        // OTHER FOUR COLORS UNDECIDED
-    )
 
     fun manageWorld(world: World) = world.apply {
         worldBorder.setCenter(0.5, 0.5)
@@ -63,4 +70,18 @@ object ChasingTailsUtils {
         }
 
     var initEndSpawn: Location? = null
+
+    fun Player.formatUsername(): String {
+        return when (uniqueId.toString()) {
+            "389c4c9b-6342-42fc-beb3-922a7d7a72f9" -> "코마"
+            "dc339a98-af07-49ed-a9d7-c3b95d3d2000" -> "행크"
+            "a14ea0bf-77ea-4c49-ad42-c4cee010b10c" -> "쪼만"
+            "a6d46d92-f701-49e5-a6bd-14a2e3ba76d6" -> "우융"
+            "ae2314d7-ed7e-49b6-ad44-58d93e33f4bb" -> "파이브"
+            "814e180c-22ab-4d92-b17d-4808800927c4" -> "플래그"
+            "a8d09337-1fe0-48a8-9b47-857b4033e717" -> "티푸"
+            "b1b54589-95f9-44d3-9626-edb9288fa4f6" -> "옝"
+            else -> name
+        }
+    }
 }

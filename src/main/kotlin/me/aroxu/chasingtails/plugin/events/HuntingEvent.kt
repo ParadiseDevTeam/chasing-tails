@@ -79,6 +79,8 @@ object HuntingEvent : Listener {
             isCancelled = true
         } else if (item?.type == Material.COMPASS && gamePlayer.master != null) {
             isCancelled = true
+        } else if (player.gamePlayerData?.isDeadTemporarily == true) {
+            isCancelled = true
         }
     }
 
@@ -153,7 +155,7 @@ object HuntingEvent : Listener {
 
                 ChasingTailsGame.gamePlayers.forEach {
                     if (it.master == gamePlayer.master || it == gamePlayer.master) {
-                        it.sendMessage(text("${gamePlayer.name}이(가) 사망했습니다. (30초 후 리스폰)"))
+                        it.sendMessage(text("${gamePlayer.name}이(가) 사망했습니다. (30초 후 리스폰)", NamedTextColor.RED))
                     }
                 }
             } else {
@@ -180,48 +182,53 @@ object HuntingEvent : Listener {
         get() = if (targeterAttackable) "타겟 플레이어와 그 플레이어의 꼬리, 자신의 헌터와 그 헌터의 꼬리, 자신의 꼬리 이외의 플레이어는 공격할 수 없습니다!"
         else "타겟 플레이어와 그 플레이어의 꼬리, 자신의 꼬리 이외의 플레이어는 공격할 수 없습니다!"
 
-    private fun processDamage(damaged: GamePlayer, damager: GamePlayer, sendAlerts: Boolean = false) = if (damaged == damager.target) {
-        damaged.lastlyReceivedDamage = damager to ChasingTailsGame.currentTick
-        
+    private fun processDamage(damaged: GamePlayer, damager: GamePlayer, sendAlerts: Boolean = false) =
+        if (damaged.isDeadTemporarily) {
+            if (damaged != damager.target || damaged.master?.target != damager) DamageResult.DISALLOW else DamageResult.ALLOW
+        } else if (damaged == damager.target) {
+            damaged.lastlyReceivedDamage = damager to ChasingTailsGame.currentTick
 
-        DamageResult.ALLOW
-    } else {
-        if (damaged.master == damager.target) (if (damaged.isDeadTemporarily) DamageResult.ALLOW_ONLY_KNOCKBACK else DamageResult.ALLOW)
-        else if (damaged.target == damager) {
-            if (damaged.isDeadTemporarily && sendAlerts) damager.alert("해당 플레이어는 임시 사망 상태입니다!")
-
-            if (targeterAttackable && !damaged.isDeadTemporarily) DamageResult.ALLOW else DamageResult.ALLOW_ONLY_KNOCKBACK
-        } else if (damaged.master?.target == damager) {
-            if (damaged.isDeadTemporarily && sendAlerts) damager.alert("해당 플레이어는 임시 사망 상태입니다!")
-
-            if (damaged.isDeadTemporarily) DamageResult.ALLOW_ONLY_KNOCKBACK else DamageResult.ALLOW
-        } else if (damager.master != null) when {
-            damaged.target == damager.master -> {
+            DamageResult.ALLOW
+        } else {
+            if (damager.isDeadTemporarily) {
+                DamageResult.DISALLOW
+            }
+            else if (damaged.master == damager.target) (if (damaged.isDeadTemporarily) DamageResult.ALLOW_ONLY_KNOCKBACK else DamageResult.ALLOW)
+            else if (damaged.target == damager) {
                 if (damaged.isDeadTemporarily && sendAlerts) damager.alert("해당 플레이어는 임시 사망 상태입니다!")
 
                 if (targeterAttackable && !damaged.isDeadTemporarily) DamageResult.ALLOW else DamageResult.ALLOW_ONLY_KNOCKBACK
-            }
-
-            damaged.master != null && damaged.master?.target == damager.master -> {
+            } else if (damaged.master?.target == damager) {
                 if (damaged.isDeadTemporarily && sendAlerts) damager.alert("해당 플레이어는 임시 사망 상태입니다!")
 
                 if (damaged.isDeadTemporarily) DamageResult.ALLOW_ONLY_KNOCKBACK else DamageResult.ALLOW
-            }
+            } else if (damager.master != null) when {
+                damaged.target == damager.master -> {
+                    if (damaged.isDeadTemporarily && sendAlerts) damager.alert("해당 플레이어는 임시 사망 상태입니다!")
 
-            damaged == damager.master -> {
-                if (sendAlerts) damager.alert("당신의 주인은 공격할 수 없습니다!")
-                DamageResult.DISALLOW
-            }
+                    if (targeterAttackable && !damaged.isDeadTemporarily) DamageResult.ALLOW else DamageResult.ALLOW_ONLY_KNOCKBACK
+                }
 
-            else -> {
+                damaged.master != null && damaged.master?.target == damager.master -> {
+                    if (damaged.isDeadTemporarily && sendAlerts) damager.alert("해당 플레이어는 임시 사망 상태입니다!")
+
+                    if (damaged.isDeadTemporarily) DamageResult.ALLOW_ONLY_KNOCKBACK else DamageResult.ALLOW
+                }
+
+                damaged == damager.master -> {
+                    if (sendAlerts) damager.alert("당신의 주인은 공격할 수 없습니다!")
+                    DamageResult.DISALLOW
+                }
+
+                else -> {
+                    if (sendAlerts) damager.alert(damageableAlert)
+                    DamageResult.DISALLOW
+                }
+            } else if (damaged.master == damager) {
+                DamageResult.ALLOW
+            } else {
                 if (sendAlerts) damager.alert(damageableAlert)
                 DamageResult.DISALLOW
             }
-        } else if (damaged.master == damager) {
-            DamageResult.ALLOW
-        } else {
-            if (sendAlerts) damager.alert(damageableAlert)
-            DamageResult.DISALLOW
         }
-    }
 }

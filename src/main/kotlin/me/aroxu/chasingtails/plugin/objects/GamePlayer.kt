@@ -2,11 +2,15 @@ package me.aroxu.chasingtails.plugin.objects
 
 import me.aroxu.chasingtails.plugin.objects.ChasingTailsGame.gamePlayers
 import me.aroxu.chasingtails.plugin.objects.ChasingTailsGame.mainMasters
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.formatUsername
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.mappedColors
 import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
 import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.server
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.EntityEffect
 import org.bukkit.Material
@@ -32,11 +36,11 @@ class GamePlayer(val uuid: UUID) {
     val offlinePlayer: OfflinePlayer
         get() = server.getOfflinePlayer(uuid)
 
-    val color get() = scoreboard.getPlayerTeam(offlinePlayer)?.color() ?: NamedTextColor.WHITE
+    private val color: TextColor get() = scoreboard.getPlayerTeam(offlinePlayer)?.color() ?: NamedTextColor.WHITE
 
     val name get() = offlinePlayer.name ?: ""
 
-    val coloredName get() = text(name, color)
+    val coloredName get() = text(player?.formatUsername() ?: name, color)
 
     val target
         get() = mainMasters[(mainMasters.indexOf((master ?: this)) + 1) % mainMasters.size]
@@ -107,24 +111,26 @@ class GamePlayer(val uuid: UUID) {
 
             slave.initializeAsSlave()
             slave.player?.let {
-                scoreboard.getPlayerTeam(it)?.unregister()
-                it.playEffect(EntityEffect.TOTEM_RESURRECT)
-                it.sendMessage(
-                    text("처치당하셨습니다! 앞으로 ").append(coloredName)
-                        .append(text("의 꼬리가 됩니다.", NamedTextColor.WHITE))
-                )
+                player?.let { player ->
+                    scoreboard.getPlayerTeam(it)?.unregister()
+                    it.playEffect(EntityEffect.TOTEM_RESURRECT)
+                    it.sendMessage(
+                        text("처치당하셨습니다! 앞으로 ").append(player.gamePlayerData!!.coloredName)
+                            .append(text("의 꼬리가 됩니다.", NamedTextColor.WHITE))
+                    )
 
-                it.inventory.addItem(ItemStack(Material.COMPASS))
+                    it.inventory.addItem(ItemStack(Material.COMPASS))
 
-                sendMessage(text("목표를 처치하는데 성공하셨습니다! ${it.name}님이 꼬리가 됩니다."))
+                    sendMessage(text("목표를 처치하는데 성공하셨습니다! ").append(it.gamePlayerData!!.coloredName).append(text("님이 꼬리가 됩니다.")))
+                }
             }
         }
 
         scoreboard.getPlayerTeam(offlinePlayer)?.addPlayer(slave.offlinePlayer)
 
         player?.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = (20 - (
-            (gamePlayers.count { it.master == this }) * 2
-        )).toDouble()
+                (gamePlayers.count { it.master == this }) * 2
+                )).toDouble()
     }
 
     fun sendMessage(message: ComponentLike) = player?.sendMessage(message)
@@ -155,7 +161,6 @@ class GamePlayer(val uuid: UUID) {
             it.isUnbreakable = true
             it.addItemFlags(*ItemFlag.values())
             it.addEnchant(Enchantment.BINDING_CURSE, 1, true)
-            it.displayName(text("꼬리 복장", NamedTextColor.YELLOW))
         }
     }
 

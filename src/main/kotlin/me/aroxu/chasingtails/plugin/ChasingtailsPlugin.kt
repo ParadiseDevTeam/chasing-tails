@@ -32,4 +32,8 @@ class ChasingtailsPlugin : JavaPlugin() {
         )
         commandManager.command(ChasingtailsCommand.registerCommand(commandManager))
     }
+
+    override fun onDisable() {
+        saveConfig()
+    }
 }
