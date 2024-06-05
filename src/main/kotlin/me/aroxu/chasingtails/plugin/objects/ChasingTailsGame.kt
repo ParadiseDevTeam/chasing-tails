@@ -60,6 +60,7 @@ object ChasingTailsGame {
             )
 
 
+            player.inventory.clear()
             player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 20.0
 
             player.health = 20.0
