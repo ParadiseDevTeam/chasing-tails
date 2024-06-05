@@ -3,6 +3,7 @@ package me.aroxu.chasingtails.plugin.objects
 import me.aroxu.chasingtails.plugin.events.HuntingEvent
 import me.aroxu.chasingtails.plugin.events.PlayerEvent
 import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.plugin
+import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.reinitializeScoreboard
 import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
 import me.aroxu.chasingtails.plugin.objects.ChasingTailsUtils.server
 import net.kyori.adventure.text.Component.text
@@ -29,6 +30,8 @@ object ChasingTailsGame {
     fun startGame() {
         if (!isRunning) {
             isRunning = true
+
+            scoreboard.reinitializeScoreboard()
 
             gamePlayers.addAll(server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }.map { GamePlayer(it.uniqueId) }.shuffled())
             mainMasters.addAll(gamePlayers)

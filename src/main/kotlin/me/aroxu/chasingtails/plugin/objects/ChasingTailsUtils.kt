@@ -8,17 +8,20 @@ import org.bukkit.Location
 import org.bukkit.OfflinePlayer
 import org.bukkit.World
 import org.bukkit.entity.Player
+import org.bukkit.scoreboard.Scoreboard
 
 object ChasingTailsUtils {
     val plugin = ChasingtailsPlugin.instance
     val server = plugin.server
 
-    val scoreboard by lazy {
-        server.scoreboardManager.newScoreboard.apply {
-            colorList.forEachIndexed { index, color ->
-                registerNewTeam("team$index").apply {
-                    color(color)
-                }
+    val scoreboard = server.scoreboardManager.newScoreboard.apply {
+        reinitializeScoreboard()
+    }
+
+    fun Scoreboard.reinitializeScoreboard() {
+        colorList.forEachIndexed { index, color ->
+            registerNewTeam("team$index").apply {
+                color(color)
             }
         }
     }
