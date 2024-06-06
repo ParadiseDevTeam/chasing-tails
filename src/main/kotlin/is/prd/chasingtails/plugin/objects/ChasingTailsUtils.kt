@@ -1,10 +1,32 @@
-package me.aroxu.chasingtails.plugin.objects
+/*
+ * Copyright (C) 2024 Paradise Dev Team
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>
+ */
 
-import me.aroxu.chasingtails.plugin.ChasingtailsPlugin
+package `is`.prd.chasingtails.plugin.objects
+
+import `is`.prd.chasingtails.plugin.ChasingtailsPlugin
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
+
+/**
+ * @author aroxu, DytroC, ContentManager
+ */
 
 object ChasingTailsUtils {
     val plugin = ChasingtailsPlugin.instance
@@ -61,7 +83,7 @@ object ChasingTailsUtils {
     }
 
     val Player.gamePlayerData
-        get() = ChasingTailsGame.gamePlayers.find { it.uuid == uniqueId }
+        get() = ChasingTailsGameManager.gamePlayers.find { it.player.uniqueId == uniqueId }
 
     var OfflinePlayer.lastLocation: Location?
         get() = plugin.config.getLocation("last_location.${uniqueId}")

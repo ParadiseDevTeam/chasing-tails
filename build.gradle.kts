@@ -1,41 +1,50 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.*
 
 plugins {
     idea
-    kotlin("jvm") version Dependency.Kotlin.Version
-    id("net.minecrell.plugin-yml.paper") version "0.6.0"
-    id("xyz.jpenilla.run-paper") version "2.1.0"
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.runPaper)
+    alias(libs.plugins.pluginYml)
 }
 
-group = "me.aroxu"
-version = "0.0.1"
+group = "is.prd"
+version = "1.0.0"
 val codeName = "chasingtails"
 
 repositories {
     mavenCentral()
-    Dependency.repos.forEach { maven(it) }
+    maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
     library(kotlin("stdlib"))
-    compileOnly("io.papermc.paper:paper-api:${Dependency.Paper.Version}-R0.1-SNAPSHOT")
-    Dependency.Libraries.Lib.forEach { compileOnly(it) }
-    Dependency.Libraries.LibCore.forEach { paperLibrary(it) }
+    compileOnly(libs.paper)
+
+    compileOnly(libs.coroutines)
+    compileOnly(libs.mccoroutines)
+    compileOnly(libs.mccoroutinesCore)
+
+    paperLibrary(libs.coroutines)
+    paperLibrary(libs.mccoroutines)
+    paperLibrary(libs.mccoroutinesCore)
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+    }
 }
 
 tasks {
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
     jar {
         archiveBaseName.set(rootProject.name)
         archiveClassifier.set("")
         archiveVersion.set("")
     }
     runServer {
-        minecraftVersion(Dependency.Paper.Version)
+        minecraftVersion("1.20.6")
         jvmArgs = listOf("-Dcom.mojang.eula.agree=true")
     }
 }
@@ -47,14 +56,15 @@ idea {
 }
 
 paper {
+    name = rootProject.name
+    version = rootProject.version.toString()
+    author = "Paradise Dev Team"
+
     main = "${project.group}.${codeName}.plugin.${codeName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}Plugin"
     loader = "${project.group}.${codeName}.plugin.loader.${codeName.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}PluginLoader"
-
-    println(main)
-    println(loader)
 
     generateLibrariesJson = true
     foliaSupported = false
 
-    apiVersion = Dependency.Paper.API
+    apiVersion = "1.20"
 }
