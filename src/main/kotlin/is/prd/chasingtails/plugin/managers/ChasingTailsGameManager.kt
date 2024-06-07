@@ -140,5 +140,7 @@ object ChasingTailsGameManager {
         foodLevel = 20
         saturation = 3F
         exhaustion = 0F
+
+        gameMode = GameMode.SURVIVAL
     }
 }

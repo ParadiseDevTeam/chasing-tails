@@ -38,6 +38,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -68,6 +69,7 @@ object GameManageEvent : Listener {
                 translatable("multiplayer.player.joined", player.displayName().color(null)).color(NamedTextColor.YELLOW)
             )
         }
+        else joinMessage(null)
 
         if (player.uniqueId.toString() in configGamePlayers && gamePlayers.firstOrNull { it.player.uniqueId == player.uniqueId } == null) gamePlayers.add(
             gamePlayer
@@ -97,6 +99,11 @@ object GameManageEvent : Listener {
                 startTasks()
             }
         }
+
+        if (player.gamePlayerData == null) {
+            player.gameMode = GameMode.SPECTATOR
+            player.sendMessage(text("현재 게임이 진행중이어 관전자로 변경되었습니다!", NamedTextColor.GRAY))
+        }
     }
 
     @EventHandler
@@ -108,6 +115,7 @@ object GameManageEvent : Listener {
                 translatable("multiplayer.player.left", player.displayName().color(null)).color(NamedTextColor.YELLOW)
             )
         }
+        else quitMessage(null)
 
         haltGame = true
 
