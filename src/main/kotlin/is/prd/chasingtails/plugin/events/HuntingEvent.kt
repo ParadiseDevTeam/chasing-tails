@@ -174,7 +174,7 @@ object HuntingEvent : Listener {
                 server.showTitle(
                     Title.title(
                         text(""),
-                        text(player.name, player.color).append(text("님이 우승하셨습니다!", NamedTextColor.WHITE)),
+                        text(killerMaster.name, killerMaster.player.color).append(text("님이 우승하셨습니다!", NamedTextColor.WHITE)),
                         Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0))
                     )
                 )

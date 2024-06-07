@@ -127,8 +127,6 @@ class GamePlayer(private val parameterPlayer: Player) {
 
             slave.initializeAsSlave()
 
-            scoreboard.getPlayerTeam(slave.offlinePlayer)?.unregister()
-
             slave.player.playEffect(EntityEffect.TOTEM_RESURRECT)
             slave.player.sendMessage(
                 text("처치당하셨습니다! 앞으로 ").append(text(player.name, player.color))
@@ -144,6 +142,7 @@ class GamePlayer(private val parameterPlayer: Player) {
 
         }
 
+        scoreboard.getPlayerTeam(slave.offlinePlayer)?.unregister()
         scoreboard.getPlayerTeam(offlinePlayer)?.addPlayer(slave.player)
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = (20 - (

@@ -32,7 +32,7 @@ object ChasingtailsConfig {
     fun saveConfigGameProgress() {
         server.onlinePlayers.forEach { player ->
             player.gamePlayerData?.let { gamePlayer ->
-                val team = scoreboard.getPlayerTeam(player.gamePlayerData!!.offlinePlayer)
+                val team = scoreboard.getPlayerTeam(player)
 
                 if (team != null) {
                     plugin.config.set(
