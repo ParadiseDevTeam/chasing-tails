@@ -17,6 +17,8 @@
 
 package `is`.prd.chasingtails.plugin.config
 
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
@@ -27,24 +29,40 @@ import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
  */
 
 object ChasingtailsConfig {
-
-
-    fun saveGameProgress() {
+    fun saveConfigGameProgress() {
         server.onlinePlayers.forEach { player ->
             player.gamePlayerData?.let { gamePlayer ->
-                val team = scoreboard.getPlayerTeam(gamePlayer.offlinePlayer)
+                val team = scoreboard.getPlayerTeam(player.gamePlayerData!!.offlinePlayer)
 
                 if (team != null) {
-                    plugin.config.set("chasingtails.${player.uniqueId}.teamname", team.name)
-                    plugin.config.set("chasingtails.${player.uniqueId}.teamcolor", team.color().value())
                     plugin.config.set(
-                        "chasingtails.${player.uniqueId}.master",
-                        gamePlayer.master?.player?.uniqueId?.toString()
+                        "chasingtails.${player.uniqueId}",
+                        GamePlayerData(
+                            team.name,
+                            team.color().value(),
+                            gamePlayer.master?.player?.uniqueId.toString(),
+                            gamePlayer.deathTimer?.uniqueId.toString(),
+                            gamePlayer.temporaryDeathDuration
+                        )
                     )
-                    plugin.config.set("chasingtails.${player.uniqueId}.")
                 }
             }
         }
+
+        plugin.config.set("gamePlayers", gamePlayers.map { it.player.uniqueId.toString() })
+        plugin.config.set("mainMasters", mainMasters.map { it.player.uniqueId.toString() })
+
+        plugin.saveConfig()
+    }
+
+    fun resetConfigGameProgress() {
+        server.offlinePlayers.forEach { player ->
+            plugin.config.set("chasingtails.${player.uniqueId}", null)
+        }
+
+        plugin.config.set("chasingtails", null)
+        plugin.config.set("gamePlayers", null)
+        plugin.config.set("mainMasters", null)
 
         plugin.saveConfig()
     }

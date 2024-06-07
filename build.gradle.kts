@@ -51,7 +51,7 @@ tasks {
 
 idea {
     module {
-        excludeDirs.addAll(listOf(file("run"), file("out"), file(".idea")))
+        excludeDirs.addAll(listOf(file("run"), file("out"), file(".idea"), file(".kotlin")))
     }
 }
 

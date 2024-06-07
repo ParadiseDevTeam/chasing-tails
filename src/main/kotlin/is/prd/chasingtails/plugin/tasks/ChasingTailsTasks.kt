@@ -21,6 +21,7 @@ import com.github.shynixn.mccoroutine.bukkit.launch
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
 import kotlinx.coroutines.delay
@@ -78,19 +79,19 @@ object ChasingTailsTasks {
                         if (location.world != master.player.world) {
                             sendActionBar(
                                 masterComponent.color(NamedTextColor.RED)
-                                    .append(master.coloredName)
+                                    .append(text(master.name, master.player.color))
                                     .append(text(")과 같은 차원에 존재하지 않습니다!", NamedTextColor.RED))
                             )
                         } else if (it.tooFar) {
                             sendActionBar(
                                 masterComponent.color(NamedTextColor.RED)
-                                    .append(master.coloredName)
+                                    .append(text(master.name, master.player.color))
                                     .append(text(")과의 거리가 너무 멉니다!", NamedTextColor.RED))
                             )
                         } else {
                             sendActionBar(
                                 masterComponent.color(NamedTextColor.GOLD)
-                                    .append(master.coloredName)
+                                    .append(text(master.name, master.player.color))
                                     .append(
                                         text(
                                             ")과의 거리: ",

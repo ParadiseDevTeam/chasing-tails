@@ -18,7 +18,13 @@
 package `is`.prd.chasingtails.plugin.events
 
 import com.github.shynixn.mccoroutine.bukkit.launch
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager
+import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.currentTick
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.haltGame
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
@@ -70,6 +76,7 @@ object HuntingEvent : Listener {
 
             item?.type == Material.COMPASS && gamePlayer.master != null -> isCancelled = true
             gamePlayer.isDeadTemporarily -> isCancelled = true
+            haltGame -> isCancelled = true
         }
     }
 
@@ -125,10 +132,14 @@ object HuntingEvent : Listener {
 
         if (attacker == gamePlayer) return
 
-        val result = processDamage(gamePlayer, attacker)
+        if (haltGame) isCancelled = true
+        else {
 
-        isCancelled = result == DamageResult.DISALLOW
-        if (result == DamageResult.ALLOW_ONLY_KNOCKBACK) damage = 0.0
+            val result = processDamage(gamePlayer, attacker)
+
+            isCancelled = result == DamageResult.DISALLOW
+            if (result == DamageResult.ALLOW_ONLY_KNOCKBACK) damage = 0.0
+        }
     }
 
     @EventHandler
@@ -138,6 +149,8 @@ object HuntingEvent : Listener {
         if (gamePlayer.isDeadTemporarily && cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             isCancelled = true
         }
+
+        if (haltGame) isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -149,25 +162,25 @@ object HuntingEvent : Listener {
         val master = gamePlayer.master
 
         val killer = (player.killer?.gamePlayerData ?: gamePlayer.lastlyReceivedDamage?.takeIf { (_, time) ->
-            ChasingTailsGameManager.currentTick - time < (20 * 60)
+            currentTick - time < (20 * 60)
         }?.first)
 
         val killerMaster = (killer?.master ?: killer).takeIf { gamePlayer != it }
 
         if (gamePlayer == killerMaster?.target && master == null) {
-            if (gamePlayer.isDeadTemporarily) gamePlayer.temporaryDeathDuration = -99
+            if (gamePlayer.isDeadTemporarily) gamePlayer.temporaryDeathDuration = -1
 
-            if (ChasingTailsGameManager.mainMasters.size == 2) {
+            if (mainMasters.size == 2) {
                 server.showTitle(
                     Title.title(
                         text(""),
-                        killerMaster.coloredName.append(text("님이 우승하셨습니다!", NamedTextColor.WHITE)),
+                        text(player.name, player.color).append(text("님이 우승하셨습니다!", NamedTextColor.WHITE)),
                         Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0))
                     )
                 )
 
                 server.broadcast(text("게임을 종료합니다.", NamedTextColor.GREEN))
-                ChasingTailsGameManager.stopGame()
+                stopGame()
 
                 return
             }
@@ -177,7 +190,7 @@ object HuntingEvent : Listener {
             if (master != null) {
                 gamePlayer.temporarilyKillPlayer(20 * 30)
 
-                ChasingTailsGameManager.gamePlayers.forEach {
+                gamePlayers.forEach {
                     if (it.master == gamePlayer.master || it == gamePlayer.master) {
                         it.sendMessage(text("${gamePlayer.name}이(가) 사망했습니다. (30초 후 리스폰)", NamedTextColor.RED))
                     }
@@ -200,6 +213,8 @@ object HuntingEvent : Listener {
         }
 
         player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false, false))
+
+        saveConfigGameProgress()
     }
 
     private const val DAMAGEABLE_ALERT = "타겟 플레이어와 그 플레이어의 꼬리, 자신의 꼬리 이외의 플레이어는 공격할 수 없습니다!"
@@ -221,7 +236,7 @@ object HuntingEvent : Listener {
                 }
             } else {
                 if (damaged == damager.target) { // 공격받은 이가 공격자의 타겟일 경우
-                    damaged.lastlyReceivedDamage = damager to ChasingTailsGameManager.currentTick
+                    damaged.lastlyReceivedDamage = damager to currentTick
 
                     return DamageResult.ALLOW
                 } else if (damaged.target == damager) { // 공격받은 이의 타겟이 공격자일 경우 (쫓기는 상황)
@@ -232,8 +247,7 @@ object HuntingEvent : Listener {
                     return DamageResult.DISALLOW
                 } else if (damaged == damager.master?.target) {
                     return DamageResult.ALLOW_ONLY_KNOCKBACK
-                }
-                else if (damaged.master != null) { // 공격받은 이가 꼬리일 경우
+                } else if (damaged.master != null) { // 공격받은 이가 꼬리일 경우
                     return DamageResult.ALLOW
                 } else {
                     damager.alert(DAMAGEABLE_ALERT)

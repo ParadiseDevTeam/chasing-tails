@@ -80,10 +80,11 @@ object ChasingtailsCommand {
                                     player.sendMessage(text("\n"))
                                 }
                             }
-                        }
-                        startGame()
-                        server.onlinePlayers.forEach { player ->
-                            player.sendMessage(text("게임을 시작합니다.", NamedTextColor.GREEN))
+
+                            startGame()
+                            server.onlinePlayers.forEach { player ->
+                                player.sendMessage(text("게임을 시작합니다.", NamedTextColor.GREEN))
+                            }
                         }
                     } else {
                         ctx.sendMessage(text("이미 게임이 진행중입니다.", NamedTextColor.RED))

@@ -19,21 +19,17 @@ package `is`.prd.chasingtails.plugin.objects
 
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.formatUsername
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.mappedColors
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.EntityEffect
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
-import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Display
 import org.bukkit.entity.Mob
@@ -50,34 +46,14 @@ import org.bukkit.util.NumberConversions
  * @author aroxu, DytroC, ContentManager
  */
 
-class GamePlayer(private val parameterPlayer: Player) : ConfigurationSerializable {
-    companion object {
-        @JvmStatic
-        fun deseralize(args: Map<String, Any?>): GamePlayer {
-            val player = args["player"] as Player
-            val originalMaster = args["master"] as GamePlayer
-            val originalTemporaryDeathDuration = args["temporaryDeathDuration"] as Int
-
-            return GamePlayer(player).apply {
-                master = originalMaster
-                temporaryDeathDuration = originalTemporaryDeathDuration
-            }
-        }
-    }
-
-    val player
+class GamePlayer(private val parameterPlayer: Player) {
+    val player: Player
         get() = parameterPlayer
 
     val offlinePlayer: OfflinePlayer
         get() = server.getOfflinePlayer(player.uniqueId)
 
-    val color: TextColor get() = scoreboard.getPlayerTeam(offlinePlayer)?.color() ?: NamedTextColor.WHITE
-
-    val koreanColor get() = mappedColors[color] ?: "하얀색"
-
     val name get() = offlinePlayer.name ?: ""
-
-    val coloredName get() = text(player.formatUsername(), color)
 
     val target
         get() = mainMasters[(mainMasters.indexOf((master ?: this)) + 1) % mainMasters.size]
@@ -90,9 +66,9 @@ class GamePlayer(private val parameterPlayer: Player) : ConfigurationSerializabl
         get() = temporaryDeathDuration > 0
 
     var lastlyReceivedDamage: Pair<GamePlayer, Int>? = null
-    var temporaryDeathDuration = 0
+    var temporaryDeathDuration = -1
         set(value) {
-            if (value <= 0) {
+            if (value == 0) {
                 deathTimer?.remove()
                 deathTimer = null
 
@@ -107,31 +83,36 @@ class GamePlayer(private val parameterPlayer: Player) : ConfigurationSerializabl
 
                 sendMessage(text("부활하셨습니다!"))
 
+
                 val masterLocation = master?.player?.location
                 if (masterLocation != null) {
                     initializeAsSlave()
                     player.teleport(masterLocation)
                 }
-            } else {
-                (deathTimer ?: player.world.spawn(
-                    player.location.add(0.0, 2.3, 0.0),
-                    TextDisplay::class.java,
-                ) {
-                    it.isPersistent = true
-                    it.alignment = TextDisplay.TextAlignment.CENTER
-                    it.billboard = Display.Billboard.CENTER
-                    player.addPassenger(it)
-                }.also {
-                    deathTimer = it
-                }).text(
-                    text("부활까지 ${NumberConversions.ceil(value / 20.0)}초", NamedTextColor.YELLOW)
-                )
-            }
 
-            field = value
+                field = -1
+            } else {
+                if (value != -1) {
+                    (deathTimer ?: player.world.spawn(
+                        player.location.add(0.0, 2.3, 0.0),
+                        TextDisplay::class.java,
+                    ) {
+                        it.isPersistent = true
+                        it.alignment = TextDisplay.TextAlignment.CENTER
+                        it.billboard = Display.Billboard.CENTER
+                        player.addPassenger(it)
+                    }.also {
+                        deathTimer = it
+                    }).text(
+                        text("부활까지 ${NumberConversions.ceil(value / 20.0)}초", NamedTextColor.YELLOW)
+                    )
+                }
+
+                field = value
+            }
         }
 
-    private var deathTimer: TextDisplay? = null
+    var deathTimer: TextDisplay? = null
 
     fun enslave(slave: GamePlayer, inherited: Boolean = false) {
         slave.master = this
@@ -145,26 +126,31 @@ class GamePlayer(private val parameterPlayer: Player) : ConfigurationSerializabl
             }
 
             slave.initializeAsSlave()
-            scoreboard.getPlayerTeam(slave.player)?.unregister()
+
+            scoreboard.getPlayerTeam(slave.offlinePlayer)?.unregister()
+
             slave.player.playEffect(EntityEffect.TOTEM_RESURRECT)
             slave.player.sendMessage(
-                text("처치당하셨습니다! 앞으로 ").append(player.gamePlayerData!!.coloredName)
-                    .append(text("의 꼬리가 됩니다.", NamedTextColor.WHITE))
+                text("처치당하셨습니다! 앞으로 ").append(text(player.name, player.color))
+                    .append(text("님의 꼬리가 됩니다.", NamedTextColor.WHITE))
             )
 
             slave.player.inventory.addItem(ItemStack(Material.COMPASS))
 
             sendMessage(
-                text("목표를 처치하는데 성공하셨습니다! ").append(slave.player.gamePlayerData!!.coloredName).append(text("님이 꼬리가 됩니다."))
+                text("목표를 처치하는데 성공하셨습니다! ").append(text(slave.name, slave.player.color))
+                    .append(text("님이 꼬리가 됩니다."))
             )
 
         }
 
-        scoreboard.getPlayerTeam(offlinePlayer)?.addPlayer(slave.offlinePlayer)
+        scoreboard.getPlayerTeam(offlinePlayer)?.addPlayer(slave.player)
 
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = (20 - (
                 (gamePlayers.count { it.master == this }) * 2
                 )).toDouble()
+
+        slave.deathTimer?.remove()
     }
 
     fun sendMessage(message: ComponentLike) = player.sendMessage(message)
@@ -172,16 +158,6 @@ class GamePlayer(private val parameterPlayer: Player) : ConfigurationSerializabl
 
     override fun equals(other: Any?) = other is GamePlayer && other.player.uniqueId == player.uniqueId
     override fun hashCode() = player.uniqueId.hashCode()
-
-    override fun serialize(): MutableMap<String, Any?> {
-        val map = mutableMapOf<String, Any?>()
-        map["player"] = player
-        map["target"] = target
-        map["master"] = master
-        map["temporaryDeathDuration"] = temporaryDeathDuration
-
-        return map
-    }
 
     fun temporarilyKillPlayer(duration: Int) {
         player.apply {
@@ -218,7 +194,7 @@ class GamePlayer(private val parameterPlayer: Player) : ConfigurationSerializabl
 
     private fun ItemStack.applyColorToArmor() = apply {
         editMeta {
-            if (it is LeatherArmorMeta) it.setColor(Color.fromRGB(color.value()))
+            if (it is LeatherArmorMeta) it.setColor(Color.fromRGB(player.color.value()))
             it.isUnbreakable = true
             it.addItemFlags(*ItemFlag.entries.toTypedArray())
             it.addEnchant(Enchantment.BINDING_CURSE, 1, true)

@@ -18,12 +18,12 @@
 package `is`.prd.chasingtails.plugin
 
 import `is`.prd.chasingtails.plugin.commands.ChasingtailsCommand.registerCommand
-import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveGameProgress
+import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
+import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
+import `is`.prd.chasingtails.plugin.config.GamePlayerData
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.haltGame
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
-import `is`.prd.chasingtails.plugin.objects.GamePlayer
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -40,7 +40,7 @@ class ChasingtailsPlugin : JavaPlugin() {
     override fun onEnable() {
         instance = this
 
-        ConfigurationSerialization.registerClass(GamePlayer::class.java)
+        ConfigurationSerialization.registerClass(GamePlayerData::class.java)
 
         isRunning = config.getBoolean("isRunning")
         if (isRunning) {
@@ -52,6 +52,10 @@ class ChasingtailsPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (isRunning) saveGameProgress()
+        if (isRunning && !haltGame) {
+            saveConfigGameProgress()
+        } else {
+            resetConfigGameProgress()
+        }
     }
 }

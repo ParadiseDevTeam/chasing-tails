@@ -17,23 +17,26 @@
 
 package `is`.prd.chasingtails.plugin.managers
 
-import `is`.prd.chasingtails.plugin.events.HuntingEvent
+import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
 import `is`.prd.chasingtails.plugin.events.GameManageEvent
-import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks
+import `is`.prd.chasingtails.plugin.events.HuntingEvent
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.notifyTeam
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.reinitializeScoreboard
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
 import `is`.prd.chasingtails.plugin.objects.GamePlayer
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.*
+import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks
+import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.entity.TextDisplay
 import org.bukkit.event.HandlerList
-import java.util.LinkedList
+import java.util.*
 import kotlin.random.Random
 
 /**
@@ -47,6 +50,8 @@ object ChasingTailsGameManager {
 
             field = value
         }
+
+    var haltGame = false
 
     val gamePlayers = LinkedList<GamePlayer>()
     val mainMasters = LinkedList<GamePlayer>()
@@ -86,29 +91,17 @@ object ChasingTailsGameManager {
                 player.restoreDefaults()
             }
 
-            gamePlayers.forEach { player ->
-                player.sendMessage(
-                    text("당신의 팀: ", NamedTextColor.YELLOW)
-                        .append(text(player.koreanColor, player.color))
-                )
-
-                player.sendMessage(
-                    text("당신의 타겟은 ", NamedTextColor.YELLOW).append(
-                        text(
-                            player.target
-                                .koreanColor, player.target.color
-                        )
-                    ).append(text("입니다.", NamedTextColor.YELLOW))
-                )
+            gamePlayers.forEach { gamePlayer ->
+                gamePlayer.notifyTeam()
             }
+
+            ChasingTailsTasks.startTasks()
         } else {
-            // TODO: RESTORE PLAYER DATA
+            haltGame = checkPlayers()
         }
 
         server.pluginManager.registerEvents(HuntingEvent, plugin)
         server.pluginManager.registerEvents(GameManageEvent, plugin)
-
-        ChasingTailsTasks.startTasks()
     }
 
     fun stopGame() {
@@ -125,12 +118,16 @@ object ChasingTailsGameManager {
         scoreboard.teams.forEach { it.unregister() }
 
         server.onlinePlayers.forEach { it.restoreDefaults() }
+        server.offlinePlayers.forEach { it.lastLocation = null }
+        plugin.config.set("last_location", null)
 
         server.worlds.forEach { world ->
             world.entities.filterIsInstance<TextDisplay>().forEach {
                 it.remove()
             }
         }
+
+        resetConfigGameProgress()
 
         isRunning = false
     }

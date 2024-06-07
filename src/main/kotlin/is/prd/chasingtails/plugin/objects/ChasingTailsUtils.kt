@@ -18,10 +18,15 @@
 package `is`.prd.chasingtails.plugin.objects
 
 import `is`.prd.chasingtails.plugin.ChasingtailsPlugin
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager
+import `is`.prd.chasingtails.plugin.config.GamePlayerData
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.*
 import org.bukkit.entity.Player
+import org.bukkit.entity.TextDisplay
 import org.bukkit.scoreboard.Scoreboard
 
 /**
@@ -32,11 +37,11 @@ object ChasingTailsUtils {
     val plugin = ChasingtailsPlugin.instance
     val server = plugin.server
 
-    val scoreboard = server.scoreboardManager.newScoreboard.apply {
+    val scoreboard = server.scoreboardManager.mainScoreboard.apply {
         reinitializeScoreboard()
     }
 
-    val mappedColors = hashMapOf<NamedTextColor, String>(
+    private val mappedColors = hashMapOf<NamedTextColor, String>(
         Pair(NamedTextColor.LIGHT_PURPLE, "핑크색"),
         Pair(NamedTextColor.RED, "빨간색"),
         Pair(NamedTextColor.GOLD, "주황색"),
@@ -75,7 +80,7 @@ object ChasingTailsUtils {
     }
 
     val Player.gamePlayerData
-        get() = ChasingTailsGameManager.gamePlayers.find { it.player.uniqueId == uniqueId }
+        get() = gamePlayers.find { it.player.uniqueId == uniqueId }
 
     var OfflinePlayer.lastLocation: Location?
         get() = plugin.config.getLocation("last_location.${uniqueId}")
@@ -85,7 +90,36 @@ object ChasingTailsUtils {
 
     var initEndSpawn: Location? = null
 
-    fun Player.formatUsername(): String {
+    val admins = hashSetOf(
+        "762dea11-9c45-4b18-95fc-a86aab3b39ee",
+        "5082c832-7f7c-4b04-b0c7-2825062b7638",
+        "5ca88187-c8af-48b8-b4e8-6243b16f924a"
+    )
+
+    val Player.color: TextColor
+        get() = this@ChasingTailsUtils.scoreboard.getPlayerTeam(this)?.color()
+            ?: NamedTextColor.WHITE
+
+    private val Player.koreanColor
+        get() = mappedColors[color] ?: "하얀색"
+
+    fun GamePlayer.notifyTeam() {
+        sendMessage(
+            text("당신의 팀: ", NamedTextColor.YELLOW)
+                .append(text(player.koreanColor, player.color))
+        )
+
+        sendMessage(
+            text("당신의 타겟은 ", NamedTextColor.YELLOW).append(
+                text(
+                    target
+                        .player.koreanColor, target.player.color
+                )
+            ).append(text("입니다.", NamedTextColor.YELLOW))
+        )
+    }
+
+    private fun Player.formatUsername(): String {
         return when (uniqueId.toString()) {
             "389c4c9b-6342-42fc-beb3-922a7d7a72f9" -> "코마"
             "dc339a98-af07-49ed-a9d7-c3b95d3d2000" -> "행크"
@@ -97,5 +131,46 @@ object ChasingTailsUtils {
             "b1b54589-95f9-44d3-9626-edb9288fa4f6" -> "옝"
             else -> name
         }
+    }
+
+    fun checkPlayers(): Boolean {
+        val configGamePlayers =
+            plugin.config.getStringList("gamePlayers")
+        val configMainMasters =
+            plugin.config.getStringList("mainMasters")
+
+        println("DEBUG - gamePlayers: ${gamePlayers.size}")
+        println("DEBUG - mainMasters: ${mainMasters.size}")
+        println("DEBUG - configGamePlayers: ${configGamePlayers.size}")
+        println("DEBUG - configMainMasters: ${configMainMasters.size}")
+
+        return configGamePlayers.size != gamePlayers.size || configMainMasters.size != mainMasters.size
+    }
+
+    fun Player.restoreGamePlayer() {
+        val data = plugin.config.get("chasingtails.${uniqueId}") as GamePlayerData
+
+        gamePlayerData?.let { gamePlayer ->
+            gamePlayer.master = gamePlayers.find { it.player.uniqueId.toString() == data.master }
+            gamePlayer.deathTimer = server.worlds
+                .flatMap { world -> world.entities }
+                .firstOrNull { it.uniqueId.toString() == data.deathTimer } as? TextDisplay
+            gamePlayer.temporaryDeathDuration = data.temporaryDeathDuration
+
+            gamePlayer.deathTimer?.let { deathTimer ->
+                gamePlayer.player.addPassenger(deathTimer)
+            }
+        }
+
+        val team = this@ChasingTailsUtils.scoreboard.getTeam(data.teamName)
+            ?: this@ChasingTailsUtils.scoreboard.registerNewTeam(data.teamName)
+
+        try {
+            team.color()
+        } catch (e: IllegalStateException) {
+            team.color(NamedTextColor.namedColor(data.teamColor))
+        }
+
+        team.addPlayer(this)
     }
 }
