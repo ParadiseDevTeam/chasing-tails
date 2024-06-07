@@ -47,9 +47,9 @@ object ChasingTailsUtils {
         Pair(NamedTextColor.GOLD, "주황색"),
         Pair(NamedTextColor.YELLOW, "노란색"),
         Pair(NamedTextColor.GREEN, "초록색"),
-        Pair(NamedTextColor.DARK_PURPLE, "보라색"),
+        Pair(NamedTextColor.BLUE, "파란색"),
         Pair(NamedTextColor.DARK_BLUE, "남색"),
-        Pair(NamedTextColor.BLUE, "파란색")
+        Pair(NamedTextColor.DARK_PURPLE, "보라색")
     )
 
     fun Scoreboard.reinitializeScoreboard() {
