@@ -18,6 +18,7 @@
 package `is`.prd.chasingtails.plugin
 
 import `is`.prd.chasingtails.plugin.commands.ChasingtailsCommand.registerCommand
+import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveGameProgress
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
@@ -51,8 +52,6 @@ class ChasingtailsPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        config.set("masterData", mainMasters)
-        config.set("gamePlayerData", server.onlinePlayers.map { it.gamePlayerData })
-        saveConfig()
+        if (isRunning) saveGameProgress()
     }
 }

@@ -69,14 +69,6 @@ object ChasingTailsUtils {
     }
 
     fun manageWorld(world: World) = world.apply {
-        worldBorder.setCenter(0.5, 0.5)
-
-        worldBorder.size = when (environment) {
-            World.Environment.NORMAL, World.Environment.NETHER -> 3200.0
-            World.Environment.THE_END -> 500.0
-            World.Environment.CUSTOM -> 59999968.0
-        }
-
         setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)
         setGameRule(GameRule.KEEP_INVENTORY, true)
         difficulty = Difficulty.EASY

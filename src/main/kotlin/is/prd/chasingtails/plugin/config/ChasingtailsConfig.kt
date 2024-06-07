@@ -17,12 +17,35 @@
 
 package `is`.prd.chasingtails.plugin.config
 
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
+
 /**
  * @author aroxu, DytroC, ContentManager
  */
 
 object ChasingtailsConfig {
-    fun saveGameProgress() {
 
+
+    fun saveGameProgress() {
+        server.onlinePlayers.forEach { player ->
+            player.gamePlayerData?.let { gamePlayer ->
+                val team = scoreboard.getPlayerTeam(gamePlayer.offlinePlayer)
+
+                if (team != null) {
+                    plugin.config.set("chasingtails.${player.uniqueId}.teamname", team.name)
+                    plugin.config.set("chasingtails.${player.uniqueId}.teamcolor", team.color().value())
+                    plugin.config.set(
+                        "chasingtails.${player.uniqueId}.master",
+                        gamePlayer.master?.player?.uniqueId?.toString()
+                    )
+                    plugin.config.set("chasingtails.${player.uniqueId}.")
+                }
+            }
+        }
+
+        plugin.saveConfig()
     }
 }
