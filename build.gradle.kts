@@ -22,10 +22,12 @@ dependencies {
     library(kotlin("stdlib"))
     compileOnly(libs.paper)
 
+    compileOnly(libs.cloud)
     compileOnly(libs.coroutines)
     compileOnly(libs.mccoroutines)
     compileOnly(libs.mccoroutinesCore)
 
+    paperLibrary(libs.cloud)
     paperLibrary(libs.coroutines)
     paperLibrary(libs.mccoroutines)
     paperLibrary(libs.mccoroutinesCore)
