@@ -100,9 +100,9 @@ object GameManageEvent : Listener {
             }
         }
 
-        if (player.gamePlayerData == null) {
+        if (player.uniqueId.toString() !in configGamePlayers) {
             player.gameMode = GameMode.SPECTATOR
-            player.sendMessage(text("현재 게임이 진행중이어 관전자로 변경되었습니다!", NamedTextColor.GRAY))
+            player.sendMessage(text("현재 게임이 진행중이어 관전 상태로 전환되었습니다!", NamedTextColor.GRAY))
         }
     }
 
