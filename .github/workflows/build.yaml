@@ -26,3 +26,31 @@ jobs:
 
       - name: Build
         run: ./gradlew build --stacktrace
+
+      - name: Set Version
+        run: echo "::set-output name=version::$(echo ${{ github.sha }} | cut -c -6)"
+        id: version
+
+      - name: Set Release Name
+        run: echo "::set-output name=release_name::$(echo ${{ github.sha }} | cut -c -6)"
+        id: release_name
+
+      - uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.release_name }}
+          tag_name: ${{ steps.version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/libs/chasing-tails.jar
+          asset_name: chasing-tails.jar
+          asset_content_type: application/java-archive
