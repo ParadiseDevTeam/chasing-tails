@@ -221,7 +221,7 @@ object HuntingEvent : Listener {
 
     private fun processDamage(damaged: GamePlayer, damager: GamePlayer): DamageResult {
         if (damager.isDeadTemporarily) { // 공격자가 임시 사망 상태
-            damager.alert("임시 사망 상태에서는 공격할 수 없습니다!")
+            damager.alert("리스폰 대기 상태에서는 공격할 수 없습니다!")
             return DamageResult.DISALLOW
         } else {
             if (damaged.isDeadTemporarily) { // 공격받은 이가 임시 사망 상태
@@ -230,7 +230,7 @@ object HuntingEvent : Listener {
                 } else if (damaged.target == damager.master) {
                     DamageResult.ALLOW_ONLY_KNOCKBACK
                 } else {
-                    damager.alert("해당 플레이어는 임시 사망 상태입니다!")
+                    damager.alert("해당 플레이어는 리스폰 대기 상태입니다!")
 
                     DamageResult.DISALLOW
                 }
