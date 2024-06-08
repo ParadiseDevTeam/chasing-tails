@@ -75,7 +75,7 @@ class GamePlayer(private val parameterPlayer: Player) {
                 player.playEffect(EntityEffect.TOTEM_RESURRECT)
                 player.addPotionEffects(
                     listOf(
-                        PotionEffect(PotionEffectType.RESISTANCE, 20 * 5, 1, false, false, false),
+                        PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20 * 5, 1, false, false, false),
                         PotionEffect(PotionEffectType.REGENERATION, 20 * 45, 1, false, false, false),
                         PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 40, 0, false, false, false)
                     )
