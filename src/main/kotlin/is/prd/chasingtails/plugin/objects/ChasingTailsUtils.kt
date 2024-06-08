@@ -76,6 +76,8 @@ object ChasingTailsUtils {
     fun manageWorld(world: World) = world.apply {
         setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)
         setGameRule(GameRule.KEEP_INVENTORY, true)
+        setGameRule(GameRule.SHOW_DEATH_MESSAGES, false)
+        setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
         difficulty = Difficulty.EASY
     }
 
