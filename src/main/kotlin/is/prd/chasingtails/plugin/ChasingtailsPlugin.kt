@@ -62,8 +62,10 @@ class ChasingtailsPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        if (isRunning && !haltGame) {
-            saveConfigGameProgress()
+        if (isRunning) {
+            if (!haltGame) {
+                saveConfigGameProgress()
+            }
         } else {
             resetConfigGameProgress()
         }
