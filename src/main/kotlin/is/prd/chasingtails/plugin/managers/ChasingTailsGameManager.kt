@@ -76,6 +76,8 @@ object ChasingTailsGameManager {
                     it.getTeam("team$index")?.addPlayer(player)
                 }
 
+                player.exp = 0F
+
                 val x = Random.nextInt(-750, 750)
                 val z = Random.nextInt(-750, 750)
 
