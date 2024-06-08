@@ -39,6 +39,23 @@ object ChasingtailsCommand {
     fun registerCommand(manager: CommandManager<CommandSender>): Command.Builder<CommandSender> {
         val builder = manager.commandBuilder("chasingtails", "ct")
 
+        builder.handler { ctx ->
+            ctx.sender.sendMessage(
+                text(
+                    """
+                    꼬리잡기 (Chasing-tails) 플러그인
+                    by Paradise Dev Team
+                    -----------------------------
+                    도움말
+                    - 게임 시작: /chasingtails start
+                    - 게임 종료: /chasingtails stop
+                    
+                    ※ /ct 로 축약 사용 가능합니다.
+                """.trimIndent()
+                )
+            )
+        }
+
         manager.command(builder.literal("start")
             .permission { sender -> sender.isOp }
             .handler { ctx ->
@@ -48,7 +65,12 @@ object ChasingtailsCommand {
                     if (!isRunning) {
                         plugin.launch {
                             server.onlinePlayers.forEach { player ->
-                                player.sendMessage(text("게임 플레이 도중 버그는 언제든지 발생 할 수 있음을 미리 고지합니다.", NamedTextColor.RED))
+                                player.sendMessage(
+                                    text(
+                                        "게임 플레이 도중 버그는 언제든지 발생 할 수 있음을 미리 고지합니다.",
+                                        NamedTextColor.RED
+                                    )
+                                )
                                 player.sendMessage(text("3초 후 게임이 시작됩니다."))
                             }
                             delay(3000)
