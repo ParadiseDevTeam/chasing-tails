@@ -40,7 +40,7 @@ object ChasingtailsConfig {
                         GamePlayerData(
                             team.name,
                             team.color().value(),
-                            gamePlayer.master?.player?.uniqueId.toString(),
+                            gamePlayer.master?.uuid.toString(),
                             gamePlayer.deathTimer?.uniqueId.toString(),
                             gamePlayer.temporaryDeathDuration
                         )

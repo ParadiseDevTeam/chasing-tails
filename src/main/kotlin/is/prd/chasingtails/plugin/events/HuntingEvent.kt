@@ -21,7 +21,7 @@ import com.github.shynixn.mccoroutine.bukkit.launch
 import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.currentTick
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.haltGame
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
@@ -67,6 +67,7 @@ object HuntingEvent : Listener {
         val gamePlayer = player.gamePlayerData ?: return
 
         when {
+            gameHalted -> isCancelled = true
             action.isRightClick && item?.type == Material.DIAMOND && gamePlayer.master == null -> handleDiamondInteraction(
                 gamePlayer
             )
@@ -76,7 +77,6 @@ object HuntingEvent : Listener {
 
             item?.type == Material.COMPASS && gamePlayer.master != null -> isCancelled = true
             gamePlayer.isDeadTemporarily -> isCancelled = true
-            haltGame -> isCancelled = true
         }
     }
 
@@ -132,7 +132,7 @@ object HuntingEvent : Listener {
 
         if (attacker == gamePlayer) return
 
-        if (haltGame) isCancelled = true
+        if (gameHalted) isCancelled = true
         else {
 
             val result = processDamage(gamePlayer, attacker)
@@ -150,7 +150,7 @@ object HuntingEvent : Listener {
             isCancelled = true
         }
 
-        if (haltGame) isCancelled = true
+        if (gameHalted) isCancelled = true
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

@@ -18,10 +18,11 @@
 package `is`.prd.chasingtails.plugin.events
 
 import com.destroystokyo.paper.event.player.PlayerTeleportEndGatewayEvent
-import com.github.shynixn.mccoroutine.bukkit.launch
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.haltGame
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.admins
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
@@ -35,7 +36,6 @@ import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
 import `is`.prd.chasingtails.plugin.objects.GamePlayer
 import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.startTasks
 import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.stopTasks
-import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor
@@ -50,6 +50,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent
 import org.bukkit.event.player.*
+import java.util.*
 
 /**
  * @author aroxu, DytroC, ContentManager
@@ -59,7 +60,7 @@ object GameManageEvent : Listener {
 
     @EventHandler
     fun PlayerJoinEvent.onJoin() {
-        val gamePlayer = GamePlayer(player)
+        val uuid = player.uniqueId
 
         val configGamePlayers = plugin.config.getStringList("gamePlayers")
         val configMainMasters = plugin.config.getStringList("mainMasters")
@@ -71,26 +72,31 @@ object GameManageEvent : Listener {
 
         player.noDamageTicks = 0
 
-        if (player.uniqueId.toString() !in admins) {
+        if (uuid.toString() !in admins) {
             joinMessage(
                 translatable("multiplayer.player.joined", player.displayName().color(null)).color(NamedTextColor.YELLOW)
             )
         } else joinMessage(null)
 
-        if (player.uniqueId.toString() in configGamePlayers && gamePlayers.firstOrNull { it.player.uniqueId == player.uniqueId } == null) gamePlayers.add(
-            gamePlayer
-        )
-        if (player.uniqueId.toString() in configMainMasters && mainMasters.firstOrNull { it.player.uniqueId == player.uniqueId } == null) mainMasters.add(
-            gamePlayer
-        )
+        if (gameHalted) {
+            if (uuid.toString() in configGamePlayers) joinedGamePlayers.add(uuid)
+            if (uuid.toString() in configMainMasters) joinedGameMasters.add(uuid)
 
-        if (haltGame) {
             val check = checkPlayers()
 
             if (check) {
                 player.sendMessage(text("기존 게임 플레이 인원이 전부 접속되지 않아 현재 게임이 정지되어있습니다.", NamedTextColor.GRAY))
             } else {
-                haltGame = false
+                val players = configGamePlayers.map {
+                    GamePlayer(UUID.fromString(it))
+                }
+
+                gamePlayers.clear()
+                gamePlayers.addAll(players)
+                mainMasters.clear()
+                mainMasters.addAll(players.filter { it.uuid.toString() in configMainMasters })
+
+                gameHalted = false
 
                 server.onlinePlayers.forEach {
                     it.restoreGamePlayer()
@@ -113,6 +119,7 @@ object GameManageEvent : Listener {
 
     @EventHandler
     fun PlayerQuitEvent.onQuit() {
+        val uuid = player.uniqueId
         player.lastLocation = player.location
 
         if (player.uniqueId.toString() !in admins) {
@@ -121,21 +128,26 @@ object GameManageEvent : Listener {
             )
         } else quitMessage(null)
 
-        haltGame = true
+        if (uuid in joinedGamePlayers && !gameHalted) {
+            gameHalted = true
 
-        server.onlinePlayers.forEach {
-            it.sendMessage(
-                text("! ", NamedTextColor.YELLOW).decorate(TextDecoration.BOLD)
-                    .append(
-                        text("플레이를 진행하는 유저가 접속을 종료하여 재접속 이전까지 일시적으로 게임을 중단합니다.", NamedTextColor.YELLOW).decoration(
-                            TextDecoration.BOLD,
-                            false
+            server.onlinePlayers.forEach {
+                it.sendMessage(
+                    text("! ", NamedTextColor.YELLOW).decorate(TextDecoration.BOLD)
+                        .append(
+                            text("플레이를 진행하는 유저가 접속을 종료하여 재접속 이전까지 일시적으로 게임을 중단합니다.", NamedTextColor.YELLOW).decoration(
+                                TextDecoration.BOLD,
+                                false
+                            )
                         )
-                    )
-            )
+                )
+            }
+
+            stopTasks()
         }
 
-        stopTasks()
+        joinedGamePlayers.remove(uuid)
+        joinedGameMasters.remove(uuid)
     }
 
     @EventHandler
@@ -145,7 +157,7 @@ object GameManageEvent : Listener {
             isCancelled = true
         }
 
-        if (haltGame) isCancelled = true
+        if (gameHalted) isCancelled = true
     }
 
     @EventHandler
@@ -189,7 +201,7 @@ object GameManageEvent : Listener {
                 isCancelled = true
             }
 
-            if (haltGame) isCancelled = true
+            if (gameHalted) isCancelled = true
         }
     }
 
@@ -197,13 +209,13 @@ object GameManageEvent : Listener {
     fun BlockPlaceEvent.onPlace() {
         val gamePlayer = player.gamePlayerData ?: return
         if (gamePlayer.isDeadTemporarily) isCancelled = true
-        if (haltGame) isCancelled = true
+        if (gameHalted) isCancelled = true
     }
 
     @EventHandler
     fun BlockBreakEvent.onBreak() {
         val gamePlayer = player.gamePlayerData ?: return
         if (gamePlayer.isDeadTemporarily) isCancelled = true
-        if (haltGame) isCancelled = true
+        if (gameHalted) isCancelled = true
     }
 }

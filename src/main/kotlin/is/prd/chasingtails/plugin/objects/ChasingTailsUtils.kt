@@ -20,7 +20,8 @@ package `is`.prd.chasingtails.plugin.objects
 import `is`.prd.chasingtails.plugin.ChasingtailsPlugin
 import `is`.prd.chasingtails.plugin.config.GamePlayerData
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -83,7 +84,7 @@ object ChasingTailsUtils {
     }
 
     val Player.gamePlayerData
-        get() = gamePlayers.find { it.player.uniqueId == uniqueId }
+        get() = gamePlayers.find { it.uuid == uniqueId }
 
     var OfflinePlayer.lastLocation: Location?
         get() = plugin.config.getLocation("last_location.${uniqueId}")
@@ -142,14 +143,15 @@ object ChasingTailsUtils {
         val configMainMasters =
             plugin.config.getStringList("mainMasters")
 
-        return configGamePlayers.size != gamePlayers.size || configMainMasters.size != mainMasters.size
+        return configGamePlayers.size != joinedGamePlayers.size
+                || configMainMasters.size != joinedGameMasters.size
     }
 
     fun Player.restoreGamePlayer() {
         val data = plugin.config.get("chasingtails.${uniqueId}") as GamePlayerData
 
         gamePlayerData?.let { gamePlayer ->
-            gamePlayer.master = gamePlayers.find { it.player.uniqueId.toString() == data.master }
+            gamePlayer.master = gamePlayers.find { it.uuid.toString() == data.master }
             gamePlayer.deathTimer = server.worlds
                 .flatMap { world -> world.entities }
                 .firstOrNull { it.uniqueId.toString() == data.deathTimer } as? TextDisplay

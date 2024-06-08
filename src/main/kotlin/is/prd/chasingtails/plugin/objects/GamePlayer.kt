@@ -41,17 +41,18 @@ import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.NumberConversions
+import java.util.UUID
 
 /**
  * @author aroxu, DytroC, ContentManager
  */
 
-class GamePlayer(private val parameterPlayer: Player) {
+class GamePlayer(val uuid: UUID) {
     val player: Player
-        get() = parameterPlayer
+        get() = server.getPlayer(uuid)!!
 
     val offlinePlayer: OfflinePlayer
-        get() = server.getOfflinePlayer(player.uniqueId)
+        get() = server.getOfflinePlayer(uuid)
 
     val name get() = offlinePlayer.name ?: ""
 
@@ -155,8 +156,8 @@ class GamePlayer(private val parameterPlayer: Player) {
     fun sendMessage(message: ComponentLike) = player.sendMessage(message)
     fun alert(message: String) = sendMessage(text(message, NamedTextColor.RED))
 
-    override fun equals(other: Any?) = other is GamePlayer && other.player.uniqueId == player.uniqueId
-    override fun hashCode() = player.uniqueId.hashCode()
+    override fun equals(other: Any?) = other is GamePlayer && other.uuid == uuid
+    override fun hashCode() = uuid.hashCode()
 
     fun temporarilyKillPlayer(duration: Int) {
         player.apply {

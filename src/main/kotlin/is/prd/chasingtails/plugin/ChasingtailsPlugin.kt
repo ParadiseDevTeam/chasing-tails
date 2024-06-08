@@ -23,7 +23,7 @@ import `is`.prd.chasingtails.plugin.commands.ChasingtailsCommand.registerCommand
 import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
 import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
 import `is`.prd.chasingtails.plugin.config.GamePlayerData
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.haltGame
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
 import org.bukkit.configuration.serialization.ConfigurationSerialization
@@ -63,7 +63,7 @@ class ChasingtailsPlugin : JavaPlugin() {
 
     override fun onDisable() {
         if (isRunning) {
-            if (!haltGame) {
+            if (!gameHalted) {
                 saveConfigGameProgress()
             }
         } else {

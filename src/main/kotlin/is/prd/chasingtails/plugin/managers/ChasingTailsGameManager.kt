@@ -20,6 +20,8 @@ package `is`.prd.chasingtails.plugin.managers
 import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
 import `is`.prd.chasingtails.plugin.events.GameManageEvent
 import `is`.prd.chasingtails.plugin.events.HuntingEvent
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
+import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
@@ -51,7 +53,7 @@ object ChasingTailsGameManager {
             field = value
         }
 
-    var haltGame = false
+    var gameHalted = false
 
     val gamePlayers = LinkedList<GamePlayer>()
     val mainMasters = LinkedList<GamePlayer>()
@@ -64,9 +66,14 @@ object ChasingTailsGameManager {
 
             scoreboard.reinitializeScoreboard()
 
+            val uuidMap = server.onlinePlayers.map { it.uniqueId }
+
             gamePlayers.addAll(server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }
-                .map { GamePlayer(it) }.shuffled())
+                .map { GamePlayer(it.uniqueId) }.shuffled())
             mainMasters.addAll(gamePlayers)
+
+            joinedGamePlayers.addAll(uuidMap)
+            joinedGameMasters.addAll(uuidMap)
 
             server.worlds.forEach(ChasingTailsUtils::manageWorld)
 
@@ -99,7 +106,7 @@ object ChasingTailsGameManager {
 
             ChasingTailsTasks.startTasks()
         } else {
-            haltGame = checkPlayers()
+            gameHalted = checkPlayers()
         }
 
         server.pluginManager.registerEvents(HuntingEvent, plugin)
