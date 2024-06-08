@@ -18,6 +18,7 @@
 package `is`.prd.chasingtails.plugin.events
 
 import com.destroystokyo.paper.event.player.PlayerTeleportEndGatewayEvent
+import com.github.shynixn.mccoroutine.bukkit.launch
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.haltGame
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
@@ -34,6 +35,7 @@ import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
 import `is`.prd.chasingtails.plugin.objects.GamePlayer
 import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.startTasks
 import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.stopTasks
+import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor
@@ -62,14 +64,18 @@ object GameManageEvent : Listener {
         val configGamePlayers = plugin.config.getStringList("gamePlayers")
         val configMainMasters = plugin.config.getStringList("mainMasters")
 
+        if (configGamePlayers.isEmpty() || configMainMasters.isEmpty()) {
+            player.sendMessage(text("설정 파일의 참여 플레이어와 주인 정보가 비어있습니다. 버그일 가능성이 매우 높습니다.", NamedTextColor.RED))
+            return
+        }
+
         player.noDamageTicks = 0
 
         if (player.uniqueId.toString() !in admins) {
             joinMessage(
                 translatable("multiplayer.player.joined", player.displayName().color(null)).color(NamedTextColor.YELLOW)
             )
-        }
-        else joinMessage(null)
+        } else joinMessage(null)
 
         if (player.uniqueId.toString() in configGamePlayers && gamePlayers.firstOrNull { it.player.uniqueId == player.uniqueId } == null) gamePlayers.add(
             gamePlayer
@@ -89,7 +95,6 @@ object GameManageEvent : Listener {
                 server.onlinePlayers.forEach {
                     it.restoreGamePlayer()
                     it.sendMessage(text("게임을 재개합니다.", NamedTextColor.GREEN))
-
                 }
 
                 server.onlinePlayers.forEach {
@@ -114,8 +119,7 @@ object GameManageEvent : Listener {
             quitMessage(
                 translatable("multiplayer.player.left", player.displayName().color(null)).color(NamedTextColor.YELLOW)
             )
-        }
-        else quitMessage(null)
+        } else quitMessage(null)
 
         haltGame = true
 

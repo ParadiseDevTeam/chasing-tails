@@ -25,6 +25,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.*
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.entity.TextDisplay
 import org.bukkit.scoreboard.Scoreboard
@@ -141,11 +142,6 @@ object ChasingTailsUtils {
         val configMainMasters =
             plugin.config.getStringList("mainMasters")
 
-        println("DEBUG - gamePlayers: ${gamePlayers.size}")
-        println("DEBUG - mainMasters: ${mainMasters.size}")
-        println("DEBUG - configGamePlayers: ${configGamePlayers.size}")
-        println("DEBUG - configMainMasters: ${configMainMasters.size}")
-
         return configGamePlayers.size != gamePlayers.size || configMainMasters.size != mainMasters.size
     }
 
@@ -162,6 +158,10 @@ object ChasingTailsUtils {
             gamePlayer.deathTimer?.let { deathTimer ->
                 gamePlayer.player.addPassenger(deathTimer)
             }
+
+            gamePlayer.master?.let {
+                getAttribute(Attribute.GENERIC_MAX_HEALTH)?.baseValue = 10.0
+            }
         }
 
         val team = this@ChasingTailsUtils.scoreboard.getTeam(data.teamName)
@@ -174,5 +174,7 @@ object ChasingTailsUtils {
         }
 
         team.addPlayer(this)
+
+        gamePlayerData?.equipSlaveArmor(this)
     }
 }

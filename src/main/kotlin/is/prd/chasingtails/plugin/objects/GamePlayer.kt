@@ -184,7 +184,7 @@ class GamePlayer(private val parameterPlayer: Player) {
         exhaustion = 0F
     }
 
-    private fun equipSlaveArmor(slave: Player) = slave.inventory.apply {
+    fun equipSlaveArmor(slave: Player) = slave.inventory.apply {
         helmet = ItemStack(Material.LEATHER_HELMET).applyColorToArmor()
         chestplate = ItemStack(Material.LEATHER_CHESTPLATE).applyColorToArmor()
         leggings = ItemStack(Material.LEATHER_LEGGINGS).applyColorToArmor()
