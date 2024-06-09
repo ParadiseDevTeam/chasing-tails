@@ -57,8 +57,8 @@ class GamePlayer(val uuid: UUID) {
 
     val name get() = offlinePlayer.name ?: ""
 
-    val target
-        get() = mainMasters[(mainMasters.indexOf((master ?: this)) + 1) % mainMasters.size]
+    var target: GamePlayer = this
+        get() = master?.target ?: field
 
     var master: GamePlayer? = null
 

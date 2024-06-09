@@ -39,6 +39,7 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.TextDisplay
 import org.bukkit.event.HandlerList
 import java.util.*
+import kotlin.collections.HashSet
 import kotlin.random.Random
 
 /**
@@ -56,7 +57,7 @@ object ChasingTailsGameManager {
     var gameHalted = false
 
     val gamePlayers = LinkedList<GamePlayer>()
-    val mainMasters = LinkedList<GamePlayer>()
+    val mainMasters = HashSet<GamePlayer>()
 
     var currentTick = 0
 
@@ -78,6 +79,7 @@ object ChasingTailsGameManager {
             server.worlds.forEach(ChasingTailsUtils::manageWorld)
 
             gamePlayers.forEachIndexed { index, gamePlayer ->
+                gamePlayer.target = gamePlayers[(index + 1) % gamePlayers.size]
                 val player = gamePlayer.player
                 player.scoreboard = scoreboard.also {
                     it.getTeam("team$index")?.addPlayer(player)

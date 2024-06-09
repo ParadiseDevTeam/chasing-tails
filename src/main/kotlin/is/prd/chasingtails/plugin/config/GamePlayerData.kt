@@ -23,6 +23,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable
 data class GamePlayerData(
     val teamName: String,
     val teamColor: Int,
+    val target: String?,
     val master: String?,
     val deathTimer: String?,
     val temporaryDeathDuration: Int
@@ -32,16 +33,18 @@ data class GamePlayerData(
         fun deserialize(arg: Map<String, Any?>): GamePlayerData {
             val teamName = arg["teamName"] as String
             val teamColor = arg["teamColor"] as Int
+            val target = arg["target"] as? String
             val master = arg["master"] as? String
             val deathTimer = arg["deathTimer"] as? String
             val temporaryDeathDuration = arg["temporaryDeathDuration"] as Int
-            return GamePlayerData(teamName, teamColor, master, deathTimer, temporaryDeathDuration)
+            return GamePlayerData(teamName, teamColor, target, master, deathTimer, temporaryDeathDuration)
         }
     }
     override fun serialize(): MutableMap<String, Any?> {
         val out = mutableMapOf<String, Any?>()
         out["teamName"] = teamName
         out["teamColor"] = teamColor
+        out["target"] = target.takeIf { master == null }
         out["master"] = master
         out["deathTimer"] = deathTimer
         out["temporaryDeathDuration"] = temporaryDeathDuration

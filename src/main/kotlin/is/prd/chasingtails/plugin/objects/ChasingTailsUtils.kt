@@ -151,6 +151,9 @@ object ChasingTailsUtils {
         val data = plugin.config.get("chasingtails.${uniqueId}") as GamePlayerData
 
         gamePlayerData?.let { gamePlayer ->
+            val target = gamePlayers.find { it.uuid.toString() == data.target }
+            if (target != null) gamePlayer.target = target
+
             gamePlayer.master = gamePlayers.find { it.uuid.toString() == data.master }
             gamePlayer.deathTimer = server.worlds
                 .flatMap { world -> world.entities }
