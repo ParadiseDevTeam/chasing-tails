@@ -123,20 +123,6 @@ object ChasingTailsUtils {
         )
     }
 
-    fun Player.formatUsername(): String {
-        return when (uniqueId.toString()) {
-            "389c4c9b-6342-42fc-beb3-922a7d7a72f9" -> "코마"
-            "dc339a98-af07-49ed-a9d7-c3b95d3d2000" -> "행크"
-            "a14ea0bf-77ea-4c49-ad42-c4cee010b10c" -> "쪼만"
-            "a6d46d92-f701-49e5-a6bd-14a2e3ba76d6" -> "우융"
-            "ae2314d7-ed7e-49b6-ad44-58d93e33f4bb" -> "파이브"
-            "814e180c-22ab-4d92-b17d-4808800927c4" -> "플래그"
-            "a8d09337-1fe0-48a8-9b47-857b4033e717" -> "티푸"
-            "b1b54589-95f9-44d3-9626-edb9288fa4f6" -> "옝"
-            else -> name
-        }
-    }
-
     fun checkPlayers(): Boolean {
         val configGamePlayers =
             plugin.config.getStringList("gamePlayers")
