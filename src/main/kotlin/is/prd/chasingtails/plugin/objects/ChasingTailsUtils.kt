@@ -123,7 +123,7 @@ object ChasingTailsUtils {
         )
     }
 
-    private fun Player.formatUsername(): String {
+    fun Player.formatUsername(): String {
         return when (uniqueId.toString()) {
             "389c4c9b-6342-42fc-beb3-922a7d7a72f9" -> "코마"
             "dc339a98-af07-49ed-a9d7-c3b95d3d2000" -> "행크"

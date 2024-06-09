@@ -25,6 +25,7 @@ import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.formatUsername
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
@@ -174,7 +175,7 @@ object HuntingEvent : Listener {
                 server.showTitle(
                     Title.title(
                         text(""),
-                        text(killerMaster.name, killerMaster.player.color).append(text("님이 우승하셨습니다!", NamedTextColor.WHITE)),
+                        text(killerMaster.player.formatUsername(), killerMaster.player.color).append(text("님이 우승하셨습니다!", NamedTextColor.WHITE)),
                         Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0))
                     )
                 )

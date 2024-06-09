@@ -20,6 +20,7 @@ package `is`.prd.chasingtails.plugin.objects
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
+import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.formatUsername
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
 import net.kyori.adventure.text.Component.text
@@ -130,14 +131,14 @@ class GamePlayer(val uuid: UUID) {
 
             slave.player.playEffect(EntityEffect.TOTEM_RESURRECT)
             slave.player.sendMessage(
-                text("처치당하셨습니다! 앞으로 ").append(text(player.name, player.color))
+                text("처치당하셨습니다! 앞으로 ").append(text(player.formatUsername(), player.color))
                     .append(text("님의 꼬리가 됩니다.", NamedTextColor.WHITE))
             )
 
             slave.player.inventory.addItem(ItemStack(Material.COMPASS))
 
             sendMessage(
-                text("목표를 처치하는데 성공하셨습니다! ").append(text(slave.name, slave.player.color))
+                text("목표를 처치하는데 성공하셨습니다! ").append(text(slave.player.formatUsername(), slave.player.color))
                     .append(text("님이 꼬리가 됩니다."))
             )
 
