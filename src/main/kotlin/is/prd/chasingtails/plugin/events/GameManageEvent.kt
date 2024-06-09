@@ -108,9 +108,6 @@ object GameManageEvent : Listener {
                 server.onlinePlayers.forEach {
                     it.gamePlayerData?.notifyTeam()
                 }
-                println(mainMasters.map {
-                    it.uuid.toString()
-                })
                 startTasks()
             }
         }
