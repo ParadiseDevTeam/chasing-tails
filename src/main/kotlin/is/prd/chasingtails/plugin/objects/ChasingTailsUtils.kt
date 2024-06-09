@@ -177,6 +177,6 @@ object ChasingTailsUtils {
 
         team.addPlayer(this)
 
-        gamePlayerData?.equipSlaveArmor(this)
+        if (gamePlayerData?.master != null) gamePlayerData?.equipSlaveArmor(this)
     }
 }
