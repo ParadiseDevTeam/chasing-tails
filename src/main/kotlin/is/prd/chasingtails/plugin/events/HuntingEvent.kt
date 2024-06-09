@@ -43,10 +43,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
-import org.bukkit.entity.Player
-import org.bukkit.entity.Projectile
-import org.bukkit.entity.TNTPrimed
-import org.bukkit.entity.Tameable
+import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -160,6 +157,10 @@ object HuntingEvent : Listener {
 
         isCancelled = true
 
+        player.world.entities.filterIsInstance<Monster>().forEach { monster ->
+            if (monster.target == player) monster.target = null
+        }
+
         val master = gamePlayer.master
 
         val killer = (player.killer?.gamePlayerData ?: gamePlayer.lastlyReceivedDamage?.takeIf { (_, time) ->
@@ -246,6 +247,8 @@ object HuntingEvent : Listener {
                     damager.alert("당신의 주인은 공격할 수 없습니다! 혹시 하극상을 시전하려 했나요?")
 
                     return DamageResult.DISALLOW
+                } else if (damaged.target == damager.master) { // 노예가 헌터 때릴경우
+                    return DamageResult.ALLOW_ONLY_KNOCKBACK
                 } else if (damaged == damager.master?.target) {
                     return DamageResult.ALLOW_ONLY_KNOCKBACK
                 } else if (damaged.master != null) { // 공격받은 이가 꼬리일 경우
