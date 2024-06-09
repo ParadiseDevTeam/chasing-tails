@@ -117,6 +117,7 @@ class GamePlayer(val uuid: UUID) {
     var deathTimer: TextDisplay? = null
 
     fun enslave(slave: GamePlayer, inherited: Boolean = false) {
+        target = slave.target
         slave.master = this
         mainMasters.remove(slave)
 
