@@ -227,9 +227,9 @@ object HuntingEvent : Listener {
             return DamageResult.DISALLOW
         } else {
             if (damaged.isDeadTemporarily) { // 공격받은 이가 임시 사망 상태
-                return if (damager.target == damaged) {
+                return if (damager.target == damaged) { // 헌터 또는 그의 꼬리가 대상을 때릴 때
                     DamageResult.ALLOW
-                } else if (damaged.target == damager.master) {
+                } else if (damaged.target == damager.master) { // 대상이 헌터의 꼬리를 떄릴 때
                     DamageResult.ALLOW_ONLY_KNOCKBACK
                 } else {
                     damager.alert("해당 플레이어는 리스폰 대기 상태입니다!")
@@ -237,22 +237,18 @@ object HuntingEvent : Listener {
                     DamageResult.DISALLOW
                 }
             } else {
-                if (damaged == damager.target) { // 공격받은 이가 공격자의 타겟일 경우
+                if (damaged == damager.target) { // 공격받은 이가 공격자 (+꼬리)의 타겟일 경우
                     damaged.lastlyReceivedDamage = damager to currentTick
 
                     return DamageResult.ALLOW
-                } else if (damaged.target == damager) { // 공격받은 이의 타겟이 공격자일 경우 (쫓기는 상황)
+                } else if (damaged.master != null) { // 공격받은 이가 꼬리일 경우
+                    return DamageResult.ALLOW
+                } else if (damaged.target == (damager.master ?: damager)) { // 공격받은 이의 타겟이 공격자일 경우 (쫓기는 상황)
                     return DamageResult.ALLOW_ONLY_KNOCKBACK
                 } else if (damaged == damager.master) { // 공격한 이가 꼬리이고 공격자가 주인일 경우
                     damager.alert("당신의 주인은 공격할 수 없습니다! 혹시 하극상을 시전하려 했나요?")
 
                     return DamageResult.DISALLOW
-                } else if (damaged.target == damager.master) { // 노예가 헌터 때릴경우
-                    return DamageResult.ALLOW_ONLY_KNOCKBACK
-                } else if (damaged == damager.master?.target) {
-                    return DamageResult.ALLOW_ONLY_KNOCKBACK
-                } else if (damaged.master != null) { // 공격받은 이가 꼬리일 경우
-                    return DamageResult.ALLOW
                 } else {
                     damager.alert(DAMAGEABLE_ALERT)
                     return DamageResult.DISALLOW
