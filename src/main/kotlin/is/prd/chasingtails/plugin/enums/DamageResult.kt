@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.objects
+package `is`.prd.chasingtails.plugin.enums
 
 /**
  * @author aroxu, DytroC, ContentManager

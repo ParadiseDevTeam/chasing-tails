@@ -31,7 +31,7 @@ import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
-import `is`.prd.chasingtails.plugin.objects.DamageResult
+import `is`.prd.chasingtails.plugin.enums.DamageResult
 import `is`.prd.chasingtails.plugin.objects.GamePlayer
 import kotlinx.coroutines.delay
 import net.kyori.adventure.key.Key

@@ -19,6 +19,10 @@ package `is`.prd.chasingtails.plugin.config
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 
+/**
+ * @author aroxu, DytroC, ContentManager
+ */
+
 @Suppress("UNUSED")
 data class GamePlayerData(
     val teamName: String,

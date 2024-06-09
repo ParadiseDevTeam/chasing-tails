@@ -17,9 +17,10 @@
 
 package `is`.prd.chasingtails.plugin.commands
 
-import cloud.commandframework.Command
-import cloud.commandframework.CommandManager
 import com.github.shynixn.mccoroutine.bukkit.launch
+import com.mojang.brigadier.Command
+import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
@@ -29,20 +30,23 @@ import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.GameMode
-import org.bukkit.command.CommandSender
 
 /**
  * @author aroxu, DytroC, ContentManager
  */
 
+@Suppress("UnstableApiUsage")
 object ChasingtailsCommand {
-    fun registerCommand(manager: CommandManager<CommandSender>): Command.Builder<CommandSender> {
-        val builder = manager.commandBuilder("chasingtails", "ct")
+    fun registerCommand() {
+        plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+            val registrar = event.registrar()
+            val ct = Commands.literal("chasingtails").requires { it.sender.isOp }
 
-        builder.handler { ctx ->
-            ctx.sender.sendMessage(
-                text(
-                    """
+            ct.executes {
+                val ctx = it.source.sender
+                ctx.sendMessage(
+                    text(
+                        """
                     꼬리잡기 (Chasing-tails) 플러그인
                     by Paradise Dev Team
                     -----------------------------
@@ -52,25 +56,22 @@ object ChasingtailsCommand {
                     
                     ※ /ct 로 축약 사용 가능합니다.
                 """.trimIndent()
+                    )
                 )
-            )
-        }
 
-        manager.command(builder.literal("start")
-            .permission { sender -> sender.isOp }
-            .handler { ctx ->
+                Command.SINGLE_SUCCESS
+            }
+
+            ct.then(Commands.literal("start").executes {
+                val ctx = it.source.sender
+
                 if (server.onlinePlayers.filter { player -> player.gameMode != GameMode.SPECTATOR }.size !in 7..8) {
-                    ctx.sender.sendMessage(text("플레이어의 수가 7 ~ 8명 이어야합니다.", NamedTextColor.RED))
+                    ctx.sendMessage(text("플레이어의 수가 7 ~ 8명 이어야합니다.", NamedTextColor.RED))
                 } else {
                     if (!isRunning) {
                         plugin.launch {
                             server.onlinePlayers.forEach { player ->
-                                player.sendMessage(
-                                    text(
-                                        "게임 플레이 도중 버그는 언제든지 발생 할 수 있음을 미리 고지합니다.",
-                                        NamedTextColor.RED
-                                    )
-                                )
+                                player.sendMessage(text("게임 플레이 도중 버그는 언제든지 발생 할 수 있음을 미리 고지합니다.", NamedTextColor.RED))
                                 player.sendMessage(text("3초 후 게임이 시작됩니다."))
                             }
                             delay(3000)
@@ -86,24 +87,27 @@ object ChasingtailsCommand {
                             }
                         }
                     } else {
-                        ctx.sender.sendMessage(text("이미 게임이 진행중입니다.", NamedTextColor.RED))
+                        ctx.sendMessage(text("이미 게임이 진행중입니다.", NamedTextColor.RED))
                     }
                 }
-            }
-        )
 
-        manager.command(builder.literal("stop")
-            .permission { sender -> sender.isOp }
-            .handler { ctx ->
+                Command.SINGLE_SUCCESS
+            })
+
+            ct.then(Commands.literal("stop").executes {
+                val ctx = it.source.sender
+
                 if (isRunning) {
                     stopGame()
-                    ctx.sender.sendMessage(text("게임을 종료합니다.", NamedTextColor.GREEN))
+                    ctx.sendMessage(text("게임을 종료합니다.", NamedTextColor.GREEN))
                 } else {
-                    ctx.sender.sendMessage(text("게임이 진행중이지 않습니다.", NamedTextColor.RED))
+                    ctx.sendMessage(text("게임이 진행중이지 않습니다.", NamedTextColor.RED))
                 }
-            }
-        )
 
-        return builder
+                Command.SINGLE_SUCCESS
+            })
+
+            registrar.register(ct.build(), "A chasing tails command.", listOf("ct"))
+        }
     }
 }

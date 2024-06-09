@@ -22,12 +22,10 @@ dependencies {
     library(kotlin("stdlib"))
     compileOnly(libs.paper)
 
-    compileOnly(libs.cloud)
     compileOnly(libs.coroutines)
     compileOnly(libs.mccoroutines)
     compileOnly(libs.mccoroutinesCore)
 
-    paperLibrary(libs.cloud)
     paperLibrary(libs.coroutines)
     paperLibrary(libs.mccoroutines)
     paperLibrary(libs.mccoroutinesCore)
@@ -35,7 +33,7 @@ dependencies {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
@@ -46,7 +44,7 @@ tasks {
         archiveVersion.set("")
     }
     runServer {
-        minecraftVersion("1.20.4")
+        minecraftVersion("1.20.6")
         jvmArgs = listOf("-Dcom.mojang.eula.agree=true")
     }
 }

@@ -17,8 +17,6 @@
 
 package `is`.prd.chasingtails.plugin
 
-import cloud.commandframework.execution.CommandExecutionCoordinator
-import cloud.commandframework.paper.PaperCommandManager
 import `is`.prd.chasingtails.plugin.commands.ChasingtailsCommand.registerCommand
 import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
 import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
@@ -28,7 +26,6 @@ import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
 import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.function.Function
 
 
 /**
@@ -52,13 +49,7 @@ class ChasingtailsPlugin : JavaPlugin() {
             logger.warning("이전 서버 종료 때 게임이 진행중이었습니다. 자동으로 게임이 재개되어 시작 명령어를 입력하실 필요가 없습니다.")
         }
 
-        val commandManager = PaperCommandManager(
-            this,
-            CommandExecutionCoordinator.simpleCoordinator(),
-            Function.identity(),
-            Function.identity()
-        )
-        commandManager.command(registerCommand(commandManager))
+        registerCommand()
     }
 
     override fun onDisable() {
