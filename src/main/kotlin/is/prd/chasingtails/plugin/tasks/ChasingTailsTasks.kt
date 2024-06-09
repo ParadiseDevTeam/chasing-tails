@@ -45,10 +45,19 @@ object ChasingTailsTasks {
         distancingTask()
         gameTick()
         heartbeatTask()
+        listNameTask()
     }
 
     fun stopTasks() {
         server.scheduler.cancelTasks(plugin)
+    }
+
+    fun listNameTask() {
+        server.scheduler.runTaskTimer(plugin, Runnable {
+            server.onlinePlayers.forEach {
+                it.playerListName(text(it.name, NamedTextColor.WHITE))
+            }
+        }, 0L, 0L)
     }
 
     private fun gameTick() {
@@ -69,8 +78,6 @@ object ChasingTailsTasks {
                         )
                     }
                 }
-
-                it.player.playerListName(text(it.name, NamedTextColor.WHITE))
 
                 if (master != null) {
                     it.player.apply {

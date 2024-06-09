@@ -34,6 +34,7 @@ import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.restoreGamePlayer
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
 import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
 import `is`.prd.chasingtails.plugin.objects.GamePlayer
+import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.listNameTask
 import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.startTasks
 import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.stopTasks
 import net.kyori.adventure.text.Component.text
@@ -79,6 +80,8 @@ object GameManageEvent : Listener {
         } else joinMessage(null)
 
         if (gameHalted) {
+            if (server.scheduler.pendingTasks.isEmpty()) listNameTask()
+
             if (uuid.toString() in configGamePlayers) joinedGamePlayers.add(uuid)
             if (uuid.toString() in configMainMasters) joinedGameMasters.add(uuid)
 
@@ -108,6 +111,9 @@ object GameManageEvent : Listener {
                 server.onlinePlayers.forEach {
                     it.gamePlayerData?.notifyTeam()
                 }
+
+                server.scheduler.cancelTasks(plugin)
+
                 startTasks()
             }
         }
