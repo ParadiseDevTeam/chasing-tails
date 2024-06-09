@@ -22,7 +22,7 @@
 
 <h2 align="center">버그 제보</h2>
 
-<h4 align="center"><a href="https://github.com/ParadiseDevTeam/chasing-tails/issues/new">여기를 눌러 이슈를 생성해주세요. 이슈를 생성하실 때에는 반드시 서버 버전, 로그, 오류 발생 조건 등을 상세히 작성해주시길 바랍니다.</a></h4>
+<h4 align="center"><a href="https://github.com/ParadiseDevTeam/chasing-tails/issues/new">여기를 눌러 이슈를 생성해주세요.</br >이슈를 생성하실 때에는 반드시 서버 버전, 로그, 오류 발생 조건 등을 상세히 작성해주시길 바랍니다.</a></h4>
 
 <h2 align="center">라이선스</h2>
 
