@@ -98,7 +98,7 @@ object GameManageEvent : Listener {
 
                 gameHalted = false
 
-                server.scoreboardManager.mainScoreboard.teams.forEach { it.unregister() } // 이거 안불리면 추후 공개 플러그인에서도 큰일인지라, 대책을 고민해봐야..
+                server.scoreboardManager.mainScoreboard.teams.forEach { it.unregister() }
 
                 server.onlinePlayers.forEach {
                     it.restoreGamePlayer()
