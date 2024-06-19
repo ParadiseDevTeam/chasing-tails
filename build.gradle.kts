@@ -44,7 +44,7 @@ tasks {
         archiveVersion.set("")
     }
     runServer {
-        minecraftVersion("1.20.6")
+        minecraftVersion("1.21")
         jvmArgs = listOf("-Dcom.mojang.eula.agree=true")
     }
 }
