@@ -15,13 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.objects
+package me.prdis.chasingtails.plugin.objects
 
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.color
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.server
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor

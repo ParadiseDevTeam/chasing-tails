@@ -15,23 +15,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.managers
+package me.prdis.chasingtails.plugin.managers
 
-import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
-import `is`.prd.chasingtails.plugin.events.GameManageEvent
-import `is`.prd.chasingtails.plugin.events.HuntingEvent
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.notifyTeam
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.reinitializeScoreboard
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
-import `is`.prd.chasingtails.plugin.objects.GamePlayer
-import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks
+import me.prdis.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
+import me.prdis.chasingtails.plugin.events.GameManageEvent
+import me.prdis.chasingtails.plugin.events.HuntingEvent
+import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
+import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.notifyTeam
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.plugin
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.reinitializeScoreboard
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.server
+import me.prdis.chasingtails.plugin.objects.GamePlayer
+import me.prdis.chasingtails.plugin.tasks.ChasingTailsTasks
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute

@@ -15,15 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin
+package me.prdis.chasingtails.plugin
 
-import `is`.prd.chasingtails.plugin.commands.ChasingtailsCommand.registerCommand
-import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
-import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
-import `is`.prd.chasingtails.plugin.config.GamePlayerData
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
+import me.prdis.chasingtails.plugin.commands.ChasingtailsCommand.registerCommand
+import me.prdis.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
+import me.prdis.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
+import me.prdis.chasingtails.plugin.config.GamePlayerData
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
 

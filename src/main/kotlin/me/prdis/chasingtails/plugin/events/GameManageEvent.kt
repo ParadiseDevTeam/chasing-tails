@@ -15,28 +15,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.events
+package me.prdis.chasingtails.plugin.events
 
 import com.destroystokyo.paper.event.player.PlayerTeleportEndGatewayEvent
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.admins
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.notifyTeam
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.restoreGamePlayer
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
-import `is`.prd.chasingtails.plugin.objects.GamePlayer
-import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.listNameTask
-import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.startTasks
-import `is`.prd.chasingtails.plugin.tasks.ChasingTailsTasks.stopTasks
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
+import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.admins
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.notifyTeam
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.plugin
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.restoreGamePlayer
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.server
+import me.prdis.chasingtails.plugin.objects.GamePlayer
+import me.prdis.chasingtails.plugin.tasks.ChasingTailsTasks.listNameTask
+import me.prdis.chasingtails.plugin.tasks.ChasingTailsTasks.startTasks
+import me.prdis.chasingtails.plugin.tasks.ChasingTailsTasks.stopTasks
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor

@@ -15,13 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.objects
+package me.prdis.chasingtails.plugin.objects
 
-import `is`.prd.chasingtails.plugin.ChasingtailsPlugin
-import `is`.prd.chasingtails.plugin.config.GamePlayerData
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
+import me.prdis.chasingtails.plugin.ChasingtailsPlugin
+import me.prdis.chasingtails.plugin.config.GamePlayerData
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
+import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
+import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -101,7 +101,7 @@ object ChasingTailsUtils {
     )
 
     val Player.color: TextColor
-        get() = this@ChasingTailsUtils.scoreboard.getPlayerTeam(this)?.color()
+        get() = ChasingTailsUtils.scoreboard.getPlayerTeam(this)?.color()
             ?: NamedTextColor.WHITE
 
     private val Player.koreanColor
@@ -155,8 +155,8 @@ object ChasingTailsUtils {
             }
         }
 
-        val team = this@ChasingTailsUtils.scoreboard.getTeam(data.teamName)
-            ?: this@ChasingTailsUtils.scoreboard.registerNewTeam(data.teamName)
+        val team = ChasingTailsUtils.scoreboard.getTeam(data.teamName)
+            ?: ChasingTailsUtils.scoreboard.registerNewTeam(data.teamName)
 
         try {
             team.color()

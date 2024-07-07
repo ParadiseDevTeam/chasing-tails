@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.config
+package me.prdis.chasingtails.plugin.config
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable
 

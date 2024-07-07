@@ -15,14 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.enums
+package me.prdis.chasingtails.plugin.managers
+
+import java.util.UUID
 
 /**
  * @author aroxu, DytroC, ContentManager
  */
 
-enum class DamageResult {
-    DISALLOW,
-    ALLOW_ONLY_KNOCKBACK,
-    ALLOW
+object ChasingTailsResumptionManager {
+    val joinedGamePlayers = HashSet<UUID>()
+    val joinedGameMasters = HashSet<UUID>()
 }

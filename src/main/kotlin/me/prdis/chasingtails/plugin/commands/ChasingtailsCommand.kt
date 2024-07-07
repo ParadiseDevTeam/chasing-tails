@@ -15,17 +15,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.commands
+package me.prdis.chasingtails.plugin.commands
 
 import com.github.shynixn.mccoroutine.bukkit.launch
 import com.mojang.brigadier.Command
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.plugin
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.server
 import kotlinx.coroutines.delay
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor

@@ -15,23 +15,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>
  */
 
-package `is`.prd.chasingtails.plugin.events
+package me.prdis.chasingtails.plugin.events
 
 import com.github.shynixn.mccoroutine.bukkit.launch
-import `is`.prd.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
-import `is`.prd.chasingtails.plugin.enums.DamageResult
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.currentTick
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
-import `is`.prd.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.color
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.plugin
-import `is`.prd.chasingtails.plugin.objects.ChasingTailsUtils.server
-import `is`.prd.chasingtails.plugin.objects.GamePlayer
+import me.prdis.chasingtails.plugin.config.ChasingtailsConfig.saveConfigGameProgress
+import me.prdis.chasingtails.plugin.enums.DamageResult
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.currentTick
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.color
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.lastLocation
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.plugin
+import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.server
+import me.prdis.chasingtails.plugin.objects.GamePlayer
 import kotlinx.coroutines.delay
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound

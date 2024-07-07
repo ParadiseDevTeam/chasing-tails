@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.pluginYml)
 }
 
-group = "is.prd"
+group = "me.prdis"
 version = "1.0.0"
 val codeName = "chasingtails"
 
@@ -66,5 +66,5 @@ paper {
     generateLibrariesJson = true
     foliaSupported = false
 
-    apiVersion = "1.20"
+    apiVersion = "1.21"
 }
