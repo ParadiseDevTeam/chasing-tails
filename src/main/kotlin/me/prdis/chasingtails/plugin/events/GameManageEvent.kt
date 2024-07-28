@@ -18,12 +18,11 @@
 package me.prdis.chasingtails.plugin.events
 
 import com.destroystokyo.paper.event.player.PlayerTeleportEndGatewayEvent
-import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
+import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
 import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
-import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.admins
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.initEndSpawn
@@ -73,11 +72,9 @@ object GameManageEvent : Listener {
 
         player.noDamageTicks = 0
 
-        if (uuid.toString() !in admins) {
-            joinMessage(
-                translatable("multiplayer.player.joined", player.displayName().color(null)).color(NamedTextColor.YELLOW)
-            )
-        } else joinMessage(null)
+        joinMessage(
+            translatable("multiplayer.player.joined", player.displayName().color(null)).color(NamedTextColor.YELLOW)
+        )
 
         if (gameHalted) {
             if (server.scheduler.pendingTasks.isEmpty()) listNameTask()
@@ -129,11 +126,9 @@ object GameManageEvent : Listener {
         val uuid = player.uniqueId
         player.lastLocation = player.location
 
-        if (player.uniqueId.toString() !in admins) {
-            quitMessage(
-                translatable("multiplayer.player.left", player.displayName().color(null)).color(NamedTextColor.YELLOW)
-            )
-        } else quitMessage(null)
+        quitMessage(
+            translatable("multiplayer.player.left", player.displayName().color(null)).color(NamedTextColor.YELLOW)
+        )
 
         if (uuid in joinedGamePlayers && !gameHalted) {
             gameHalted = true

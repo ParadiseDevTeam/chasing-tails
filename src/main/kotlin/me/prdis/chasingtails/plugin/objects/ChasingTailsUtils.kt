@@ -94,12 +94,6 @@ object ChasingTailsUtils {
 
     var initEndSpawn: Location? = null
 
-    val admins = hashSetOf(
-        "762dea11-9c45-4b18-95fc-a86aab3b39ee",
-        "5082c832-7f7c-4b04-b0c7-2825062b7638",
-        "5ca88187-c8af-48b8-b4e8-6243b16f924a"
-    )
-
     val Player.color: TextColor
         get() = ChasingTailsUtils.scoreboard.getPlayerTeam(this)?.color()
             ?: NamedTextColor.WHITE
