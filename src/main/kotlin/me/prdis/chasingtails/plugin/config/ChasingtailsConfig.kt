@@ -18,7 +18,6 @@
 package me.prdis.chasingtails.plugin.config
 
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.plugin
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
@@ -40,9 +39,9 @@ object ChasingtailsConfig {
                         GamePlayerData(
                             team.name,
                             team.color().value(),
-                            gamePlayer.target.uuid.takeIf { gamePlayer.master == null }.toString(),
-                            gamePlayer.master?.uuid.toString(),
-                            gamePlayer.deathTimer?.uniqueId.toString(),
+                            gamePlayer.target.takeIf { gamePlayer.master == null }?.run { uuid.toString() },
+                            gamePlayer.master?.run { uuid.toString() },
+                            gamePlayer.deathTimer?.run { uniqueId.toString() },
                             gamePlayer.temporaryDeathDuration
                         )
                     )
@@ -50,8 +49,7 @@ object ChasingtailsConfig {
             }
         }
 
-        plugin.config.set("gamePlayers", gamePlayers.map { it.player.uniqueId.toString() })
-        plugin.config.set("mainMasters", mainMasters.map { it.player.uniqueId.toString() })
+        plugin.config.set("gamePlayers", gamePlayers.map { it.offlinePlayer.uniqueId.toString() })
 
         plugin.saveConfig()
     }
@@ -63,7 +61,6 @@ object ChasingtailsConfig {
 
         plugin.config.set("chasingtails", null)
         plugin.config.set("gamePlayers", null)
-        plugin.config.set("mainMasters", null)
 
         plugin.saveConfig()
     }

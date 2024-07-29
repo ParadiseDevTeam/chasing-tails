@@ -48,7 +48,7 @@ data class GamePlayerData(
         val out = mutableMapOf<String, Any?>()
         out["teamName"] = teamName
         out["teamColor"] = teamColor
-        out["target"] = target.takeIf { master == null }
+        out["target"] = if (master == null) target else null
         out["master"] = master
         out["deathTimer"] = deathTimer
         out["temporaryDeathDuration"] = temporaryDeathDuration

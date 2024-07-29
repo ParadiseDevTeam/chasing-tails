@@ -20,7 +20,6 @@ package me.prdis.chasingtails.plugin.managers
 import me.prdis.chasingtails.plugin.config.ChasingtailsConfig.resetConfigGameProgress
 import me.prdis.chasingtails.plugin.events.GameManageEvent
 import me.prdis.chasingtails.plugin.events.HuntingEvent
-import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
 import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.checkPlayers
@@ -39,7 +38,6 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.TextDisplay
 import org.bukkit.event.HandlerList
 import java.util.*
-import kotlin.collections.HashSet
 import kotlin.random.Random
 
 /**
@@ -57,7 +55,6 @@ object ChasingTailsGameManager {
     var gameHalted = false
 
     val gamePlayers = LinkedList<GamePlayer>()
-    val mainMasters = HashSet<GamePlayer>()
 
     var currentTick = 0
 
@@ -71,10 +68,8 @@ object ChasingTailsGameManager {
 
             gamePlayers.addAll(server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }
                 .map { GamePlayer(it.uniqueId) }.shuffled())
-            mainMasters.addAll(gamePlayers)
 
             joinedGamePlayers.addAll(uuidMap)
-            joinedGameMasters.addAll(uuidMap)
 
             server.worlds.forEach(ChasingTailsUtils::manageWorld)
 
@@ -117,7 +112,6 @@ object ChasingTailsGameManager {
 
     fun stopGame() {
         gamePlayers.clear()
-        mainMasters.clear()
 
         currentTick = 0
 

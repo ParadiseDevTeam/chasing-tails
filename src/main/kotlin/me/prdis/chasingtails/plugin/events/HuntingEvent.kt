@@ -23,7 +23,6 @@ import me.prdis.chasingtails.plugin.enums.DamageResult
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.currentTick
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.stopGame
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.color
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.gamePlayerData
@@ -61,19 +60,19 @@ import java.time.Duration
 object HuntingEvent : Listener {
     @EventHandler
     fun PlayerInteractEvent.onInteract() {
-        val gamePlayer = player.gamePlayerData ?: return
+        val gamePlayer = player.gamePlayerData
 
         when {
             gameHalted -> isCancelled = true
-            action.isRightClick && item?.type == Material.DIAMOND && gamePlayer.master == null -> handleDiamondInteraction(
+            action.isRightClick && item?.type == Material.DIAMOND && gamePlayer != null && gamePlayer.master == null -> handleDiamondInteraction(
                 gamePlayer
             )
 
             item?.type == Material.END_CRYSTAL && player.world.environment == World.Environment.THE_END -> isCancelled =
                 true
 
-            item?.type == Material.COMPASS && gamePlayer.master != null -> isCancelled = true
-            gamePlayer.isDeadTemporarily -> isCancelled = true
+            item?.type == Material.COMPASS && gamePlayer?.master != null -> isCancelled = true
+            gamePlayer?.isDeadTemporarily == true -> isCancelled = true
         }
     }
 
@@ -118,7 +117,7 @@ object HuntingEvent : Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     fun EntityDamageByEntityEvent.onDamageByEntity() {
-        val gamePlayer = (entity as? Player)?.gamePlayerData ?: return
+        val gamePlayer = (entity as? Player)?.gamePlayerData
         val attacker = when (val source = damager) {
             is Player -> source
             is Projectile -> source.shooter as? Player
@@ -131,19 +130,20 @@ object HuntingEvent : Listener {
 
         if (gameHalted) isCancelled = true
         else {
+            if (gamePlayer != null) {
+                val result = processDamage(gamePlayer, attacker)
 
-            val result = processDamage(gamePlayer, attacker)
-
-            isCancelled = result == DamageResult.DISALLOW
-            if (result == DamageResult.ALLOW_ONLY_KNOCKBACK) damage = 0.0
+                isCancelled = result == DamageResult.DISALLOW
+                if (result == DamageResult.ALLOW_ONLY_KNOCKBACK) damage = 0.0
+            }
         }
     }
 
     @EventHandler
     fun EntityDamageEvent.onDamage() {
-        val gamePlayer = (entity as? Player)?.gamePlayerData ?: return
+        val gamePlayer = (entity as? Player)?.gamePlayerData
 
-        if (gamePlayer.isDeadTemporarily && cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+        if (gamePlayer?.isDeadTemporarily == true && cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
             isCancelled = true
         }
 
@@ -152,7 +152,7 @@ object HuntingEvent : Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     fun PlayerDeathEvent.onDeath() {
-        val gamePlayer = entity.gamePlayerData ?: return
+        val gamePlayer = entity.gamePlayerData
 
         isCancelled = true
 
@@ -160,56 +160,63 @@ object HuntingEvent : Listener {
             if (monster.target == player) monster.target = null
         }
 
-        val master = gamePlayer.master
+        if (gamePlayer != null) {
+            val master = gamePlayer.master
 
-        val killer = (player.killer?.gamePlayerData ?: gamePlayer.lastlyReceivedDamage?.takeIf { (_, time) ->
-            currentTick - time < (20 * 60)
-        }?.first)
+            val killer = (player.killer?.gamePlayerData ?: gamePlayer.lastlyReceivedDamage?.takeIf { (_, time) ->
+                currentTick - time < (20 * 60)
+            }?.first)
 
-        val killerMaster = (killer?.master ?: killer).takeIf { gamePlayer != it }
+            val killerMaster = (killer?.master ?: killer).takeIf { gamePlayer != it }
 
-        if (gamePlayer == killerMaster?.target && master == null) {
-            if (gamePlayer.isDeadTemporarily) gamePlayer.temporaryDeathDuration = -1
+            if (gamePlayer == killerMaster?.target && master == null) {
+                if (gamePlayer.isDeadTemporarily) gamePlayer.temporaryDeathDuration = -1
 
-            if (mainMasters.size == 2) {
-                server.showTitle(
-                    Title.title(
-                        text(""),
-                        text(killerMaster.player.name, killerMaster.player.color).append(text("님이 우승하셨습니다!", NamedTextColor.WHITE)),
-                        Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0))
-                    )
-                )
-
-                server.broadcast(text("게임을 종료합니다.", NamedTextColor.GREEN))
-                stopGame()
-
-                return
-            }
-
-            killerMaster.enslave(gamePlayer)
-        } else {
-            if (master != null) {
-                gamePlayer.temporarilyKillPlayer(20 * 30)
-
-                gamePlayers.forEach {
-                    if (it.master == gamePlayer.master || it == gamePlayer.master) {
-                        it.sendMessage(text("${gamePlayer.name}이(가) 사망했습니다. (30초 후 리스폰)", NamedTextColor.RED))
-                    }
-                }
-            } else {
-                if (player.world.environment == World.Environment.THE_END) {
-                    initEndSpawn?.let { spawn -> player.teleportAsync(spawn) }
-                }
-
-                gamePlayer.temporarilyKillPlayer(120 * 20)
-                gamePlayer.sendMessage(
-                    text("사망하셨습니다! ", NamedTextColor.RED).append(
-                        text(
-                            "현 시점으로부터 2분 뒤에 부활합니다.",
-                            NamedTextColor.WHITE
+                if (gamePlayers.filter { it.master == null }.size == 2) {
+                    server.showTitle(
+                        Title.title(
+                            text(""),
+                            text(killerMaster.player.name, killerMaster.player.color).append(
+                                text(
+                                    "님이 우승하셨습니다!",
+                                    NamedTextColor.WHITE
+                                )
+                            ),
+                            Title.Times.times(Duration.ofSeconds(0), Duration.ofSeconds(5), Duration.ofSeconds(0))
                         )
                     )
-                )
+
+                    server.broadcast(text("게임을 종료합니다.", NamedTextColor.GREEN))
+                    stopGame()
+
+                    return
+                }
+
+                killerMaster.enslave(gamePlayer)
+            } else {
+                if (master != null) {
+                    gamePlayer.temporarilyKillPlayer(20 * 30)
+
+                    gamePlayers.forEach {
+                        if (it.master == gamePlayer.master || it == gamePlayer.master) {
+                            it.sendMessage(text("${gamePlayer.name}이(가) 사망했습니다. (30초 후 리스폰)", NamedTextColor.RED))
+                        }
+                    }
+                } else {
+                    if (player.world.environment == World.Environment.THE_END) {
+                        initEndSpawn?.let { spawn -> player.teleportAsync(spawn) }
+                    }
+
+                    gamePlayer.temporarilyKillPlayer(120 * 20)
+                    gamePlayer.sendMessage(
+                        text("사망하셨습니다! ", NamedTextColor.RED).append(
+                            text(
+                                "현 시점으로부터 2분 뒤에 부활합니다.",
+                                NamedTextColor.WHITE
+                            )
+                        )
+                    )
+                }
             }
         }
 

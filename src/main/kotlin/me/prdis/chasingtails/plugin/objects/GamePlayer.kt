@@ -18,7 +18,6 @@
 package me.prdis.chasingtails.plugin.objects
 
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.color
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.scoreboard
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.server
@@ -118,7 +117,6 @@ class GamePlayer(val uuid: UUID) {
     fun enslave(slave: GamePlayer, inherited: Boolean = false) {
         target = slave.target
         slave.master = this
-        mainMasters.remove(slave)
 
         equipSlaveArmor(slave.player)
 

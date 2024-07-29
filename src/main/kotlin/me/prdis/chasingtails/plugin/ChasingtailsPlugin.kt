@@ -24,6 +24,7 @@ import me.prdis.chasingtails.plugin.config.GamePlayerData
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gameHalted
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.isRunning
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.startGame
+import net.kyori.adventure.text.Component.text
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -54,8 +55,12 @@ class ChasingtailsPlugin : JavaPlugin() {
 
     override fun onDisable() {
         if (isRunning) {
-            if (!gameHalted) {
-                saveConfigGameProgress()
+//            if (!gameHalted) {
+//                saveConfigGameProgress()
+//            }
+
+            server.onlinePlayers.forEach {
+                it.kick(text("Server closed"))
             }
         } else {
             resetConfigGameProgress()

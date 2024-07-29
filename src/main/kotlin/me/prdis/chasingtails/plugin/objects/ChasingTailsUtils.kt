@@ -20,7 +20,6 @@ package me.prdis.chasingtails.plugin.objects
 import me.prdis.chasingtails.plugin.ChasingtailsPlugin
 import me.prdis.chasingtails.plugin.config.GamePlayerData
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGameMasters
 import me.prdis.chasingtails.plugin.managers.ChasingTailsResumptionManager.joinedGamePlayers
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -120,11 +119,8 @@ object ChasingTailsUtils {
     fun checkPlayers(): Boolean {
         val configGamePlayers =
             plugin.config.getStringList("gamePlayers")
-        val configMainMasters =
-            plugin.config.getStringList("mainMasters")
 
         return configGamePlayers.size != joinedGamePlayers.size
-                || configMainMasters.size != joinedGameMasters.size
     }
 
     fun Player.restoreGamePlayer() {

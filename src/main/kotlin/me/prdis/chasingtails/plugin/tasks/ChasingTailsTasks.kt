@@ -18,13 +18,12 @@
 package me.prdis.chasingtails.plugin.tasks
 
 import com.github.shynixn.mccoroutine.bukkit.launch
+import kotlinx.coroutines.delay
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager
 import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.gamePlayers
-import me.prdis.chasingtails.plugin.managers.ChasingTailsGameManager.mainMasters
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.color
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.plugin
 import me.prdis.chasingtails.plugin.objects.ChasingTailsUtils.server
-import kotlinx.coroutines.delay
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component.text
@@ -123,7 +122,7 @@ object ChasingTailsTasks {
 
     private fun heartbeatTask() {
         server.scheduler.runTaskTimer(plugin, Runnable {
-            mainMasters.forEach {
+            gamePlayers.filter { it.master == null }.forEach {
                 val target = it.target.player
                 val player = it.player
 
