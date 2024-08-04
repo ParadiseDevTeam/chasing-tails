@@ -55,10 +55,6 @@ class ChasingtailsPlugin : JavaPlugin() {
 
     override fun onDisable() {
         if (isRunning) {
-//            if (!gameHalted) {
-//                saveConfigGameProgress()
-//            }
-
             server.onlinePlayers.forEach {
                 it.kick(text("Server closed"))
             }

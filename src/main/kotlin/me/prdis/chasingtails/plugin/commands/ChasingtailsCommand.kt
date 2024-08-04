@@ -71,7 +71,7 @@ object ChasingtailsCommand {
                     if (!isRunning) {
                         plugin.launch {
                             server.onlinePlayers.forEach { player ->
-                                player.sendMessage(text("게임 플레이 도중 버그는 언제든지 발생 할 수 있음을 미리 고지합니다.", NamedTextColor.RED))
+                                player.sendMessage(text("게임 플레이 도중 버그는 언제든지 발생 할 수 있음을 미리 고지합니다. 버그를 신고하는 경우, 양식에 맞춰 신고해주세요.", NamedTextColor.RED))
                                 player.sendMessage(text("3초 후 게임이 시작됩니다."))
                             }
                             delay(3000)
