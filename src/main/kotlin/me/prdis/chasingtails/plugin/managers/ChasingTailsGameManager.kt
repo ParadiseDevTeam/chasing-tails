@@ -64,7 +64,7 @@ object ChasingTailsGameManager {
 
             scoreboard.reinitializeScoreboard()
 
-            val uuidMap = server.onlinePlayers.map { it.uniqueId }
+            val uuidMap = server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }.map { it.uniqueId }
 
             gamePlayers.addAll(server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }
                 .map { GamePlayer(it.uniqueId) }.shuffled())

@@ -95,12 +95,12 @@ object GameManageEvent : Listener {
 
                 server.scoreboardManager.mainScoreboard.teams.forEach { it.unregister() }
 
-                server.onlinePlayers.forEach {
+                server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }.forEach {
                     it.restoreGamePlayer()
                     it.sendMessage(text("게임을 재개합니다.", NamedTextColor.GREEN))
                 }
 
-                server.onlinePlayers.forEach {
+                server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }.forEach {
                     it.gamePlayerData?.notifyTeam()
                 }
 
