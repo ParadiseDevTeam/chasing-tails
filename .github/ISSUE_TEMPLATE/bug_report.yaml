@@ -1,0 +1,33 @@
+name: 버그 신고
+description: 버그 신고를 위한 양식입니다.
+title: "[버그]: "
+labels: ["bug"]
+assignees:
+  - aserinyellsnotcute
+body:
+  - type: markdown
+    attributes:
+      value: |
+        양식을 지키지 않거나 무분별하게 생성된 Issue는 무통보로 닫은 뒤 처리하지 않습니다.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 발생한 문제 상황
+      description: 해당 버그가 발생했을때 진행하신 내용을 설명해주세요. 재현 할 수 있는 방법 역시 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 인 게임 로그
+      description: 게임 도중 발생한 로그를 첨부해주세요.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: 인 게임 구동기/버전
+      description: 게임의 구동기/버전을 알려주세요. 이는 게임 내에서 `/version` 명령을 통해 쉽게 확인할 수 있습니다.
+    validations:
+      required: true
