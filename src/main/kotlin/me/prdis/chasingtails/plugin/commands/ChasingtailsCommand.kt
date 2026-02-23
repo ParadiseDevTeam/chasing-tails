@@ -18,11 +18,11 @@
 package me.prdis.chasingtails.plugin.commands
 
 import me.prdis.chasingtails.plugin.config.ChasingtailsConfig
+import me.prdis.chasingtails.plugin.objects.ChasingtailsConsts.commandManager
+import me.prdis.chasingtails.plugin.objects.ChasingtailsConsts.server
 import me.prdis.chasingtails.plugin.objects.ChasingtailsImpl.isRunning
 import me.prdis.chasingtails.plugin.objects.ChasingtailsImpl.startGame
 import me.prdis.chasingtails.plugin.objects.ChasingtailsImpl.stopGame
-import me.prdis.chasingtails.plugin.objects.ChasingtailsConsts.commandManager
-import me.prdis.chasingtails.plugin.objects.ChasingtailsConsts.server
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.GameMode
@@ -66,7 +66,8 @@ object ChasingtailsCommand {
             val onlinePlayers = server.onlinePlayers.filter { it.gameMode != GameMode.SPECTATOR }
 
             if (onlinePlayers.size !in 3..maxPlayers) {
-                sender.sendMessage(text("플레이어의 수가 7 ~ 8명 이어야합니다.", NamedTextColor.RED))
+                // Don't be dumb. The condition is correct.
+                sender.sendMessage(text("서버 내 관전 중이지 않은 플레이어의 수가 3 ~ ${maxPlayers}명 이어야 합니다.", NamedTextColor.RED))
                 return@handler
             }
 
@@ -103,7 +104,7 @@ object ChasingtailsCommand {
                     꼬리잡기 플러그인 설정
 
                     현재 최대 플레이어 수: $maxPlayers
-                    - 최대 플레이어 수 변경: /chasingtails config maxPlayers <3~8 사이의 숫자>
+                    - 최대 플레이어 수 변경: /chasingtails config maxPlayers <3 ~ 8 사이의 숫자>
                 """.trimIndent()
                 )
             )
