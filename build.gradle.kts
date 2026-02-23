@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.prdis"
-version = "1.0.3"
+version = "1.0.4"
 val codeName = "chasingtails"
 
 repositories {
@@ -32,11 +32,6 @@ kotlin {
 }
 
 tasks {
-    jar {
-        archiveBaseName.set(rootProject.name)
-        archiveClassifier.set("")
-        archiveVersion.set("")
-    }
     runServer {
         minecraftVersion(libs.versions.minecraft.get())
         jvmArgs = listOf("-Dcom.mojang.eula.agree=true")
