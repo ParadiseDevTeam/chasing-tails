@@ -20,7 +20,6 @@ package me.prdis.chasingtails.plugin
 import me.prdis.chasingtails.plugin.commands.ChasingtailsCommand.registerCommands
 import me.prdis.chasingtails.plugin.config.ChasingtailsConfig
 import me.prdis.chasingtails.plugin.config.GamePlayerData
-import me.prdis.chasingtails.plugin.objects.ChasingtailsImpl.gamePlayers
 import me.prdis.chasingtails.plugin.objects.ChasingtailsImpl.isRunning
 import me.prdis.chasingtails.plugin.objects.ChasingtailsImpl.startGame
 import org.bukkit.configuration.serialization.ConfigurationSerialization
