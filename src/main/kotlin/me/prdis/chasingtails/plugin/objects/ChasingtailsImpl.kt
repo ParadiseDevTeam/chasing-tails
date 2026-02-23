@@ -216,10 +216,10 @@ object ChasingtailsImpl {
     }
 
     fun manageWorld(world: World) = world.apply {
-        setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)
-        setGameRule(GameRule.KEEP_INVENTORY, true)
-        setGameRule(GameRule.SHOW_DEATH_MESSAGES, false)
-        setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
+        setGameRule(GameRules.IMMEDIATE_RESPAWN, true)
+        setGameRule(GameRules.KEEP_INVENTORY, true)
+        setGameRule(GameRules.SHOW_DEATH_MESSAGES, false)
+        setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false)
         difficulty = Difficulty.EASY
     }
 
